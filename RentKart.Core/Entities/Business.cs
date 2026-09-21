@@ -7,6 +7,8 @@ namespace RentKart.Core.Entities;
 public class Business
 {
     public int Id { get; set; }
+    public string UserId { get; set; } = null!;
+    public ApplicationUser User { get; set; } = null!;
     public string BusinessName { get; set; } = null!;
     public string OwnerName { get; set; } = null!;
     public string Email { get; set; } = null!;

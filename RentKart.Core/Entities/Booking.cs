@@ -8,6 +8,7 @@ public class Booking
 {
     public int Id { get; set; }
     public string CustomerId { get; set; } = null!;
+    public ApplicationUser Customer { get; set; } = null!;
     
     public int BusinessId { get; set; }
     public Business Business { get; set; } = null!;

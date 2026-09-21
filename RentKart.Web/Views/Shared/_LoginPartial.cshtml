@@ -1,0 +1,40 @@
+@using Microsoft.AspNetCore.Identity
+@using RentKart.Core.Entities
+@using RentKart.Core.Constants
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav">
+@if (SignInManager.IsSignedIn(User))
+{
+    var user = await UserManager.GetUserAsync(User);
+    <li class="nav-item">
+        @if (User.IsInRole(RoleNames.Admin))
+        {
+            <a class="nav-link text-dark" asp-controller="AdminDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
+        }
+        else if (User.IsInRole(RoleNames.Business))
+        {
+            <a class="nav-link text-dark" asp-controller="BusinessDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
+        }
+        else
+        {
+            <a class="nav-link text-dark" asp-controller="CustomerDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
+        }
+    </li>
+    <li class="nav-item">
+        <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="RegisterCustomer">Register</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+    </li>
+}
+</ul>
