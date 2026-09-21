@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="RentKart.Core/RentKart.Core.csproj" />
+  <Project Path="RentKart.Infrastructure/RentKart.Infrastructure.csproj" />
+  <Project Path="RentKart.Tests/RentKart.Tests.csproj" />
+  <Project Path="RentKart.Web/RentKart.Web.csproj" />
+</Solution>
