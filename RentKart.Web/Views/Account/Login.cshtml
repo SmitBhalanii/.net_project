@@ -3,42 +3,50 @@
     ViewData["Title"] = "Log in";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-4">
-        <section>
-            <form id="account" method="post">
-                <h2 class="text-center mb-4">Log in to RentKart</h2>
-                <hr />
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                    <label asp-for="Email" class="form-label">Email</label>
-                    <span asp-validation-for="Email" class="text-danger"></span>
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <i class="bi bi-box-seam auth-logo"></i>
+            <h2 class="auth-title">Welcome Back</h2>
+        </div>
+        <form id="account" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+            
+            <div class="form-floating mb-3">
+                <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Email" class="form-label">Email address</label>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                <label asp-for="Password" class="form-label">Password</label>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                    <input class="form-check-input" asp-for="RememberMe" />
+                    <label asp-for="RememberMe" class="form-check-label text-muted">Remember Me</label>
                 </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Password" class="form-label">Password</label>
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <div class="checkbox mb-3">
-                    <label asp-for="RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="RememberMe" />
-                        @Html.DisplayNameFor(m => m.RememberMe)
-                    </label>
-                </div>
-                <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                </div>
-                <div class="mt-3 text-center">
-                    <p>
-                        <a asp-action="RegisterCustomer">Register as a new customer</a>
-                    </p>
-                    <p>
-                        <a asp-action="RegisterBusiness">Register a new business</a>
-                    </p>
-                </div>
-            </form>
-        </section>
+                <a href="#" class="text-decoration-none small text-primary">Forgot Password?</a>
+            </div>
+            
+            <button id="login-submit" type="submit" class="btn btn-primary w-100 py-2 mb-4">Log in</button>
+            
+            <div class="auth-divider">
+                <span>Don't have an account?</span>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <a asp-action="RegisterCustomer" class="btn btn-outline-primary w-50">Create Account</a>
+                <a asp-action="RegisterBusiness" class="btn btn-outline-primary w-50">List Business</a>
+            </div>
+        </form>
     </div>
 </div>
 

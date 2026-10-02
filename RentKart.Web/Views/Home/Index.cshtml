@@ -1,26 +1,168 @@
+@model RentKart.Web.ViewModels.Home.HomePageViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center py-5">
-    <h1 class="display-3 fw-bold text-primary mb-3">RentKart</h1>
-    <h2 class="h4 text-muted mb-4">Rent Anything You Need.</h2>
-    
-    <p class="lead mb-5">
-        Find what you need. <br />
-        Rent from nearby businesses. <br />
-        Pick it up. <br />
-        Use it. <br />
-        Return it.
-    </p>
-
-    <div class="d-flex justify-content-center gap-3">
-        <a href="#" class="btn btn-primary btn-lg">Browse Equipment</a>
-        <a href="#" class="btn btn-outline-secondary btn-lg">Find Rental Businesses</a>
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="hero-title">Rent Anything You Need.<br />Nearby.</h1>
+        <p class="hero-subtitle mx-auto" style="max-width: 600px;">
+            Discover equipment, tools, electronics, event gear and more from rental businesses and owners near you.
+        </p>
+        
+        <!-- Search -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8">
+                <div class="search-bar bg-white mx-auto">
+                    <input type="text" class="search-input" placeholder="What are you looking for?" />
+                    <div class="search-divider d-none d-md-block"></div>
+                    <input type="text" class="search-input d-none d-md-block" placeholder="Location" />
+                    <div class="search-divider d-none d-md-block"></div>
+                    <input type="text" class="search-input d-none d-md-block" placeholder="Dates" />
+                    <button class="btn btn-primary search-btn"><i class="bi bi-search me-2"></i>Search</button>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <a href="#browse" class="btn btn-primary btn-lg px-4 me-3 rounded-pill shadow-sm">Explore Rentals</a>
+            <a asp-controller="Account" asp-action="RegisterBusiness" class="btn btn-outline-primary btn-lg px-4 bg-white rounded-pill shadow-sm">List Your Equipment</a>
+        </div>
     </div>
+</section>
 
-    <div class="mt-5">
-        <a href="#" class="btn btn-link">Login</a> |
-        <a href="#" class="btn btn-link">Register</a>
+<!-- Categories Section -->
+<section id="categories" class="py-5 bg-white">
+    <div class="container">
+        <h3 class="mb-4 fw-bold">Browse by Category</h3>
+        <div class="row row-cols-2 row-cols-md-4 g-4">
+            @foreach (var category in Model.Categories)
+            {
+                <div class="col">
+                    <partial name="_CategoryCard" model="category" />
+                </div>
+            }
+        </div>
     </div>
-</div>
+</section>
+
+<!-- Featured Rentals -->
+<section id="browse" class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <h3 class="fw-bold mb-0">Featured Rentals Near You</h3>
+            <a href="#" class="text-primary text-decoration-none fw-semibold">View All <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            @foreach (var equipment in Model.FeaturedEquipment)
+            {
+                <div class="col">
+                    <partial name="_EquipmentCard" model="equipment" />
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- How RentKart Works -->
+<section id="how-it-works" class="py-5 bg-white">
+    <div class="container">
+        <h3 class="text-center fw-bold mb-5">How RentKart Works</h3>
+        <div class="row text-center g-4">
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
+                        <i class="bi bi-search text-primary fs-1"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold">1. Search</h5>
+                <p class="text-muted">Find exactly what you need in your area.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
+                        <i class="bi bi-ui-checks-grid text-primary fs-1"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold">2. Compare</h5>
+                <p class="text-muted">Explore nearby rental options and prices.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
+                        <i class="bi bi-chat-dots text-primary fs-1"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold">3. Connect</h5>
+                <p class="text-muted">Choose a provider and request the rental.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
+                        <i class="bi bi-arrow-repeat text-primary fs-1"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold">4. Rent & Return</h5>
+                <p class="text-muted">Meet locally, collect and return equipment.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why RentKart Section -->
+<section class="py-5">
+    <div class="container">
+        <h3 class="fw-bold mb-4">Why RentKart?</h3>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="d-flex mb-4">
+                    <i class="bi bi-geo-alt fs-2 text-primary me-3"></i>
+                    <div>
+                        <h5 class="fw-bold">Nearby Rentals</h5>
+                        <p class="text-muted">Find convenient rental options right in your neighborhood.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex mb-4">
+                    <i class="bi bi-shop-window fs-2 text-primary me-3"></i>
+                    <div>
+                        <h5 class="fw-bold">Multiple Providers</h5>
+                        <p class="text-muted">Compare inventory from different local rental businesses.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex mb-4">
+                    <i class="bi bi-tag fs-2 text-primary me-3"></i>
+                    <div>
+                        <h5 class="fw-bold">Transparent Pricing</h5>
+                        <p class="text-muted">See clear rental pricing before contacting the provider.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex mb-4">
+                    <i class="bi bi-shield-check fs-2 text-primary me-3"></i>
+                    <div>
+                        <h5 class="fw-bold">Trusted Marketplace</h5>
+                        <p class="text-muted">Profiles, reviews and rental history will build community trust.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Business CTA -->
+<section class="py-5 bg-white border-top">
+    <div class="container text-center py-4">
+        <h2 class="fw-bold mb-3">Have Equipment to Rent?</h2>
+        <h4 class="text-muted mb-4">Turn Your Assets Into Income.</h4>
+        <p class="mx-auto text-muted mb-4" style="max-width: 600px;">
+            Create your rental business profile, list your equipment and connect with customers nearby. Join the growing RentKart community.
+        </p>
+        <a asp-controller="Account" asp-action="RegisterBusiness" class="btn btn-primary btn-lg rounded-pill px-5 shadow">Join RentKart</a>
+    </div>
+</section>

@@ -1,0 +1,33 @@
+@model RentKart.Web.ViewModels.Equipment.EquipmentCardViewModel
+
+<div class="rk-card h-100">
+    <div class="rk-card-img-wrapper position-relative">
+        @if (string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="d-flex justify-content-center align-items-center h-100 bg-light text-muted">
+                <i class="bi bi-image" style="font-size: 3rem;"></i>
+            </div>
+        }
+        else
+        {
+            <img src="@Model.ImageUrl" class="rk-card-img" alt="@Model.Title" />
+        }
+        <span class="badge bg-light text-dark position-absolute top-0 start-0 m-3 shadow-sm rounded-pill px-3 py-2 fw-semibold">
+            <i class="bi bi-star-fill text-warning me-1"></i> @Model.Rating.ToString("0.0") (@Model.ReviewCount)
+        </span>
+    </div>
+    <div class="rk-card-body d-flex flex-column">
+        <h5 class="rk-card-title text-truncate" title="@Model.Title">@Model.Title</h5>
+        <div class="rk-card-subtitle d-flex justify-content-between align-items-center mb-3">
+            <span class="text-truncate me-2"><i class="bi bi-shop me-1"></i> @Model.BusinessName</span>
+            <span class="text-truncate flex-shrink-0"><i class="bi bi-geo-alt me-1"></i> @Model.Location</span>
+        </div>
+        <div class="mt-auto d-flex justify-content-between align-items-end">
+            <div>
+                <div class="rk-card-price">₹@Model.Price.ToString("N0")</div>
+                <small class="text-muted">/ @Model.PriceUnit</small>
+            </div>
+            <a href="#" class="btn btn-primary btn-sm px-3 rounded-pill">Details</a>
+        </div>
+    </div>
+</div>

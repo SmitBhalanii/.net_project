@@ -1,0 +1,14 @@
+@model RentKart.Web.ViewModels.Category.CategoryCardViewModel
+
+<a href="#" class="text-decoration-none">
+    <div class="category-card">
+        <div class="category-icon">
+            <i class="bi @Model.IconClass"></i>
+        </div>
+        <h5 class="category-name">@Model.Name</h5>
+        @if (Model.ListingCount > 0)
+        {
+            <p class="text-muted small mt-2 mb-0">@Model.ListingCount listings</p>
+        }
+    </div>
+</a>

@@ -11,30 +11,30 @@
     <li class="nav-item">
         @if (User.IsInRole(RoleNames.Admin))
         {
-            <a class="nav-link text-dark" asp-controller="AdminDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
+            <a class="nav-link" asp-controller="AdminDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
         }
         else if (User.IsInRole(RoleNames.Business))
         {
-            <a class="nav-link text-dark" asp-controller="BusinessDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
+            <a class="nav-link" asp-controller="BusinessDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
         }
         else
         {
-            <a class="nav-link text-dark" asp-controller="CustomerDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
+            <a class="nav-link" asp-controller="CustomerDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
         }
     </li>
     <li class="nav-item">
-        <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
-            <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+        <form class="form-inline d-inline" asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="nav-link btn btn-link" style="border: none; background: transparent;">Logout</button>
         </form>
     </li>
 }
 else
 {
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-controller="Account" asp-action="RegisterCustomer">Register</a>
+    <li class="nav-item me-2">
+        <a class="btn btn-outline-primary" asp-controller="Account" asp-action="Login">Login</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+        <a class="btn btn-primary" asp-controller="Account" asp-action="RegisterCustomer">Sign Up</a>
     </li>
 }
 </ul>

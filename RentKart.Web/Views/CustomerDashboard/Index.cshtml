@@ -2,7 +2,49 @@
     ViewData["Title"] = "Customer Dashboard";
 }
 
-<div class="text-center mt-5">
-    <h1 class="display-4">Customer Dashboard</h1>
-    <p>Welcome, Customer.</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<div class="dashboard-container mx-n3 mt-n3 mb-n3">
+    <aside class="dashboard-sidebar d-none d-md-block">
+        <div class="p-3">
+            <h6 class="text-muted fw-bold mb-3 px-2">CUSTOMER</h6>
+            <a href="#" class="dashboard-nav-item active"><i class="bi bi-house me-2"></i> Dashboard</a>
+            <a href="#" class="dashboard-nav-item"><i class="bi bi-calendar-check me-2"></i> My Bookings</a>
+            <a href="#" class="dashboard-nav-item"><i class="bi bi-heart me-2"></i> Wishlist</a>
+            <a href="#" class="dashboard-nav-item"><i class="bi bi-person me-2"></i> Profile</a>
+        </div>
+    </aside>
+    
+    <main class="dashboard-main">
+        <div class="dashboard-header">
+            <div>
+                <h2 class="dashboard-title">Welcome to RentKart</h2>
+                <p class="text-muted mb-0">Find something to rent near you.</p>
+            </div>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary">Browse Rentals</a>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="dashboard-stat-card text-center">
+                    <div class="dashboard-stat-title">Active Bookings</div>
+                    <div class="dashboard-stat-value">0</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="dashboard-stat-card text-center">
+                    <div class="dashboard-stat-title">Past Rentals</div>
+                    <div class="dashboard-stat-value">0</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="dashboard-stat-card text-center">
+                    <div class="dashboard-stat-title">Wishlisted Items</div>
+                    <div class="dashboard-stat-value">0</div>
+                </div>
+            </div>
+        </div>
+    </main>
 </div>

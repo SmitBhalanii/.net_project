@@ -1,4 +1,4 @@
-namespace RentKart.Web.Models;
+namespace RentKart.Web.ViewModels;
 
 public class ErrorViewModel
 {
