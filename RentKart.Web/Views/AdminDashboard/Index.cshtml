@@ -10,10 +10,10 @@
     <aside class="dashboard-sidebar d-none d-md-block">
         <div class="p-3">
             <h6 class="text-muted fw-bold mb-3 px-2">ADMINISTRATION</h6>
-            <a href="#" class="dashboard-nav-item active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a href="#" class="dashboard-nav-item"><i class="bi bi-shop me-2"></i> Businesses</a>
+            <a asp-controller="AdminDashboard" asp-action="Index" class="dashboard-nav-item active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a asp-controller="AdminBusiness" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-shop me-2"></i> Businesses</a>
             <a href="#" class="dashboard-nav-item"><i class="bi bi-people me-2"></i> Customers</a>
-            <a href="#" class="dashboard-nav-item"><i class="bi bi-tags me-2"></i> Categories</a>
+            <a asp-controller="Category" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-tags me-2"></i> Categories</a>
             <a href="#" class="dashboard-nav-item"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a>
         </div>
     </aside>

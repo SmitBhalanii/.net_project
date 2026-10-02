@@ -52,7 +52,7 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-end mb-4">
             <h3 class="fw-bold mb-0">Featured Rentals Near You</h3>
-            <a href="#" class="text-primary text-decoration-none fw-semibold">View All <i class="bi bi-arrow-right"></i></a>
+            <a asp-controller="Marketplace" asp-action="Index" class="text-primary text-decoration-none fw-semibold">View All <i class="bi bi-arrow-right"></i></a>
         </div>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             @foreach (var equipment in Model.FeaturedEquipment)
@@ -62,6 +62,35 @@
                 </div>
             }
         </div>
+    </div>
+</section>
+
+<!-- Popular Rental Businesses -->
+<section id="businesses" class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <h3 class="fw-bold mb-0">Popular Rental Businesses</h3>
+            <a asp-controller="Business" asp-action="Index" class="text-primary text-decoration-none fw-semibold">View All Businesses <i class="bi bi-arrow-right"></i></a>
+        </div>
+        @if (Model.PopularBusinesses.Any())
+        {
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                @foreach (var business in Model.PopularBusinesses)
+                {
+                    <div class="col">
+                        <partial name="_BusinessCard" model="business" />
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 bg-white rounded shadow-sm">
+                <i class="bi bi-shop text-muted mb-3 d-block" style="font-size: 2.5rem;"></i>
+                <h5 class="text-muted">No businesses listed yet.</h5>
+                <p class="text-muted small">Be the first to create a rental business profile on RentKart!</p>
+            </div>
+        }
     </div>
 </section>
 

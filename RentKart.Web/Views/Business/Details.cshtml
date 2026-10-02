@@ -1,0 +1,143 @@
+@model RentKart.Web.ViewModels.Business.BusinessProfileViewModel
+@{
+    ViewData["Title"] = Model.BusinessName;
+}
+
+<div class="container mt-4 mb-5">
+    <!-- Cover Image / Header Area -->
+    <div class="position-relative rounded mb-5" style="height: 250px; background-color: #f8f9fa; overflow: visible;">
+        @if (!string.IsNullOrEmpty(Model.CoverImagePath))
+        {
+            <img src="@Model.CoverImagePath" class="w-100 h-100 rounded" style="object-fit: cover;" alt="Cover" />
+        }
+        else
+        {
+            <div class="w-100 h-100 bg-secondary rounded opacity-25"></div>
+        }
+
+        <!-- Business Logo -->
+        <div class="position-absolute" style="bottom: -50px; left: 40px;">
+            @if (!string.IsNullOrEmpty(Model.LogoPath))
+            {
+                <img src="@Model.LogoPath" class="rounded-circle border border-4 border-white bg-white shadow-sm" style="width: 120px; height: 120px; object-fit: cover;" alt="@Model.BusinessName Logo" />
+            }
+            else
+            {
+                <div class="rounded-circle border border-4 border-white bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 120px; height: 120px; font-size: 3rem;">
+                    @Model.BusinessName.Substring(0, 1).ToUpper()
+                </div>
+            }
+        </div>
+        
+        <!-- Action Buttons (for Owner) -->
+        @if (User.IsInRole("Business") && User.Identity.IsAuthenticated)
+        {
+            // Simple check if this is their profile
+            <div class="position-absolute top-0 end-0 p-3">
+                <a asp-action="Edit" class="btn btn-light btn-sm shadow-sm"><i class="bi bi-pencil"></i> Edit Profile</a>
+            </div>
+        }
+    </div>
+
+    <!-- Business Info -->
+    <div class="row mt-5 pt-3">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center mb-2">
+                <h1 class="fw-bold mb-0 me-3">@Model.BusinessName</h1>
+                @if (Model.IsApproved)
+                {
+                    <span class="badge bg-success rounded-pill px-3 py-2"><i class="bi bi-check-circle me-1"></i> RentKart Approved</span>
+                }
+            </div>
+            
+            <p class="text-muted fs-5 mb-4"><i class="bi bi-geo-alt-fill text-danger"></i> @Model.City, @Model.State</p>
+            
+            <div class="mb-5">
+                <h4 class="fw-bold mb-3">About Us</h4>
+                <p style="white-space: pre-line; line-height: 1.7;">
+                    @(string.IsNullOrEmpty(Model.Description) ? "No description provided." : Model.Description)
+                </p>
+            </div>
+
+            <!-- Equipment Section -->
+            <div class="mt-5 pt-3 border-top">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold mb-0">Available Equipment (@Model.EquipmentCount)</h3>
+                </div>
+
+                @if (Model.Equipment != null && Model.Equipment.Any())
+                {
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        @foreach (var item in Model.Equipment)
+                        {
+                            <div class="col">
+                                <partial name="_EquipmentCard" model="item" />
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="bg-light text-center py-5 rounded">
+                        <h5 class="text-muted">This business hasn't listed any equipment yet.</h5>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 2rem;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Contact Information</h5>
+                    
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3 d-flex">
+                            <i class="bi bi-geo-alt text-primary fs-5 me-3"></i>
+                            <div>
+                                <strong>Location</strong><br />
+                                <span class="text-muted">@Model.City, @Model.State @Model.PostalCode</span>
+                            </div>
+                        </li>
+                        
+                        @if (!string.IsNullOrEmpty(Model.Website))
+                        {
+                            <li class="mb-3 d-flex">
+                                <i class="bi bi-globe text-primary fs-5 me-3"></i>
+                                <div>
+                                    <strong>Website</strong><br />
+                                    <a href="@Model.Website" target="_blank" class="text-decoration-none">@Model.Website</a>
+                                </div>
+                            </li>
+                        }
+                        
+                        <!-- Protected Contact Details based on rules (only show where appropriate, but MVP says just show City/State primarily, 
+                             though if user wants to rent, they might need contact info. We'll show it for now.) -->
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="mb-3 d-flex">
+                                <i class="bi bi-envelope text-primary fs-5 me-3"></i>
+                                <div>
+                                    <strong>Email</strong><br />
+                                    <a href="mailto:@Model.ContactEmail" class="text-decoration-none">@Model.ContactEmail</a>
+                                </div>
+                            </li>
+                            <li class="mb-3 d-flex">
+                                <i class="bi bi-telephone text-primary fs-5 me-3"></i>
+                                <div>
+                                    <strong>Phone</strong><br />
+                                    <span class="text-muted">@Model.ContactPhone</span>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <div class="alert alert-secondary mt-4 mb-0 text-center">
+                                <small><a asp-controller="Account" asp-action="Login">Log in</a> to view contact details.</small>
+                            </div>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -10,11 +10,11 @@
     <aside class="dashboard-sidebar d-none d-md-block">
         <div class="p-3">
             <h6 class="text-muted fw-bold mb-3 px-2">BUSINESS</h6>
-            <a href="#" class="dashboard-nav-item active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a href="#" class="dashboard-nav-item"><i class="bi bi-shop me-2"></i> My Shop</a>
-            <a href="#" class="dashboard-nav-item"><i class="bi bi-box me-2"></i> Equipment</a>
+            <a asp-controller="BusinessDashboard" asp-action="Index" class="dashboard-nav-item active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a asp-controller="Business" asp-action="MyBusiness" class="dashboard-nav-item"><i class="bi bi-shop me-2"></i> My Business</a>
+            <a asp-controller="Equipment" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-box me-2"></i> Equipment</a>
             <a href="#" class="dashboard-nav-item"><i class="bi bi-calendar-check me-2"></i> Bookings</a>
-            <a href="#" class="dashboard-nav-item"><i class="bi bi-person me-2"></i> Profile</a>
+            <a asp-controller="Business" asp-action="Edit" class="dashboard-nav-item"><i class="bi bi-person me-2"></i> Profile</a>
         </div>
     </aside>
     

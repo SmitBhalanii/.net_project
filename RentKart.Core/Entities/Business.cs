@@ -18,6 +18,7 @@ public class Business
     public string State { get; set; } = null!;
     public string PostalCode { get; set; } = null!;
     public string? Description { get; set; }
+    public string? Website { get; set; }
     public string? LogoPath { get; set; }
     public string? CoverImagePath { get; set; }
     public string? BusinessHours { get; set; }

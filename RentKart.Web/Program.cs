@@ -10,6 +10,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<RentKart.Core.Interfaces.ICategoryService, RentKart.Infrastructure.Services.CategoryService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IEquipmentService, RentKart.Infrastructure.Services.EquipmentService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IBusinessService, RentKart.Infrastructure.Services.BusinessService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IFileService, RentKart.Web.Services.FileService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

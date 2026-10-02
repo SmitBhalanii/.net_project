@@ -80,22 +80,31 @@
                     
                     <h5 class="mb-3">Provider Information</h5>
                     <div class="d-flex align-items-center mb-3">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
-                            @Model.Business.BusinessName.Substring(0, 1).ToUpper()
-                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Business.LogoPath))
+                        {
+                            <img src="@Model.Business.LogoPath" class="rounded-circle me-3 border" style="width: 50px; height: 50px; object-fit: cover;" alt="@Model.Business.BusinessName">
+                        }
+                        else
+                        {
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                                @Model.Business.BusinessName.Substring(0, 1).ToUpper()
+                            </div>
+                        }
                         <div>
                             <h6 class="mb-0">@Model.Business.BusinessName</h6>
-                            <small class="text-muted"><i class="bi bi-geo-alt"></i> @Model.City, @Model.State @Model.PostalCode</small>
+                            <small class="text-muted"><i class="bi bi-geo-alt"></i> @Model.City, @Model.State</small>
                         </div>
                     </div>
                     
-                    <div class="bg-light p-3 rounded">
+                    <div class="bg-light p-3 rounded mb-3">
                         <h6 class="mb-2">Pickup Location</h6>
                         <address class="mb-0 small text-muted">
                             @Model.Business.Address<br />
                             @Model.Business.City, @Model.Business.State @Model.Business.PostalCode
                         </address>
                     </div>
+
+                    <a asp-controller="Business" asp-action="Details" asp-route-id="@Model.BusinessId" class="btn btn-outline-secondary w-100">View Business Profile</a>
                 </div>
             </div>
         </div>
