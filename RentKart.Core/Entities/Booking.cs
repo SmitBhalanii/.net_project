@@ -29,6 +29,11 @@ public class Booking
 
     public BookingStatus Status { get; set; }
     
+    public bool PaymentRequired { get; set; }
+    public PaymentStatus PaymentStatus { get; set; }
+    public decimal PaidAmount { get; set; }
+    public DateTime? PaidAt { get; set; }
+    
     public string? CustomerNote { get; set; }
     public string? BusinessNote { get; set; }
     
@@ -39,4 +44,5 @@ public class Booking
     public Invoice? Invoice { get; set; }
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
     public ICollection<DamageReport> DamageReports { get; set; } = new List<DamageReport>();
+    public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

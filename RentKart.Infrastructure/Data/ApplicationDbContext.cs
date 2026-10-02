@@ -25,6 +25,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<RentalAgreement> RentalAgreements => Set<RentalAgreement>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<Payment> Payments => Set<Payment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

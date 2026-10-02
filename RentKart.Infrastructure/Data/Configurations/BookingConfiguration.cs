@@ -23,6 +23,7 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.RentalAmount).HasColumnType("decimal(18,2)");
         builder.Property(b => b.SecurityDepositAmount).HasColumnType("decimal(18,2)");
         builder.Property(b => b.TotalAmount).HasColumnType("decimal(18,2)");
+        builder.Property(b => b.PaidAmount).HasColumnType("decimal(18,2)");
 
         builder.Property(b => b.CustomerNote).HasMaxLength(500);
         builder.Property(b => b.BusinessNote).HasMaxLength(500);

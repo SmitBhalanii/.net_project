@@ -17,6 +17,7 @@ public class BookingDetailsViewModel
     public decimal SecurityDeposit { get; set; }
     public decimal TotalAmount { get; set; }
     public BookingStatus Status { get; set; }
+    public PaymentStatus PaymentStatus { get; set; }
     public string? CustomerNote { get; set; }
     public string? BusinessNote { get; set; }
     public DateTime CreatedAt { get; set; }

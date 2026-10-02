@@ -1,17 +1,20 @@
 using System;
 using RentKart.Core.Enums;
 
-namespace RentKart.Web.ViewModels.Booking;
+namespace RentKart.Web.ViewModels.Payment;
 
-public class BookingListViewModel
+public class PaymentCreateViewModel
 {
-    public int Id { get; set; }
+    public int BookingId { get; set; }
     public string BookingNumber { get; set; } = string.Empty;
     public string EquipmentName { get; set; } = string.Empty;
     public string BusinessName { get; set; } = string.Empty;
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
+    
+    public decimal RentalAmount { get; set; }
+    public decimal SecurityDeposit { get; set; }
     public decimal TotalAmount { get; set; }
-    public BookingStatus Status { get; set; }
-    public PaymentStatus PaymentStatus { get; set; }
+    
+    public PaymentMethod SelectedMethod { get; set; }
 }

@@ -1,0 +1,46 @@
+@model RentKart.Core.Entities.Payment
+@{
+    ViewData["Title"] = "Payment Failed";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <i class="bi bi-x-circle-fill text-danger" style="font-size: 5rem;"></i>
+            <h2 class="mt-3 mb-4">Payment Failed</h2>
+            <p class="lead">We couldn't process your demo payment.</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-danger">
+                <div class="card-body p-4">
+                    <div class="row mb-3 pb-3 border-bottom">
+                        <div class="col-sm-4 text-muted">Booking</div>
+                        <div class="col-sm-8 fw-bold">@Model.Booking.BookingNumber</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Payment Reference</div>
+                        <div class="col-sm-8">@Model.PaymentReference</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Status</div>
+                        <div class="col-sm-8">
+                            <span class="badge bg-danger">Failed</span>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-light border border-danger text-danger mt-4 mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Reason:</strong> Demo payment was unsuccessful. No funds have been transferred.
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top-0 text-center pb-4 pt-0">
+                    <a asp-action="Create" asp-route-bookingId="@Model.BookingId" class="btn btn-primary me-2">Try Again</a>
+                    <a asp-controller="Booking" asp-action="Details" asp-route-id="@Model.BookingId" class="btn btn-outline-secondary">Back to Booking</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

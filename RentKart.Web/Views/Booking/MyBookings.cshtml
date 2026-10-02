@@ -34,6 +34,7 @@
                         <th>Dates</th>
                         <th>Amount</th>
                         <th>Status</th>
+                        <th>Payment</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -69,7 +70,27 @@
                                 }
                             </td>
                             <td>
-                                <a asp-action="Details" asp-route-id="@booking.Id" class="btn btn-sm btn-outline-primary">View</a>
+                                @if (booking.PaymentStatus == RentKart.Core.Enums.PaymentStatus.Succeeded)
+                                {
+                                    <span class="badge bg-success">Paid</span>
+                                }
+                                else if (booking.PaymentStatus == RentKart.Core.Enums.PaymentStatus.Processing)
+                                {
+                                    <span class="badge bg-info text-dark">Processing</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Unpaid</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a asp-action="Details" asp-route-id="@booking.Id" class="btn btn-sm btn-outline-primary">View</a>
+                                    @if (booking.Status == RentKart.Core.Enums.BookingStatus.Approved && booking.PaymentStatus != RentKart.Core.Enums.PaymentStatus.Succeeded)
+                                    {
+                                        <a asp-controller="Payment" asp-action="Create" asp-route-bookingId="@booking.Id" class="btn btn-sm btn-success">Pay Now</a>
+                                    }
+                                </div>
                             </td>
                         </tr>
                     }

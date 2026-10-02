@@ -1,0 +1,67 @@
+@model IEnumerable<RentKart.Core.Entities.Payment>
+@{
+    ViewData["Title"] = "My Payments";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Payments</h2>
+        <a asp-controller="CustomerDashboard" asp-action="Index" class="btn btn-outline-secondary">Dashboard</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You don't have any payment history yet.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Reference</th>
+                        <th>Booking</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var payment in Model)
+                    {
+                        <tr>
+                            <td>@payment.CreatedAt.ToString("dd MMM yyyy")</td>
+                            <td><span class="font-monospace small">@payment.PaymentReference</span></td>
+                            <td>
+                                <a asp-controller="Booking" asp-action="Details" asp-route-id="@payment.BookingId">@payment.Booking.BookingNumber</a>
+                            </td>
+                            <td class="fw-bold">@payment.Amount.ToString("c")</td>
+                            <td>@payment.PaymentMethod.ToString()</td>
+                            <td>
+                                @if (payment.PaymentStatus == RentKart.Core.Enums.PaymentStatus.Succeeded)
+                                {
+                                    <span class="badge bg-success">Paid</span>
+                                }
+                                else if (payment.PaymentStatus == RentKart.Core.Enums.PaymentStatus.Failed)
+                                {
+                                    <span class="badge bg-danger">Failed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">@payment.PaymentStatus.ToString()</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@payment.Id" class="btn btn-sm btn-outline-primary">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

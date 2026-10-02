@@ -12,6 +12,8 @@ builder.Services.AddScoped<RentKart.Core.Interfaces.ICategoryService, RentKart.I
 builder.Services.AddScoped<RentKart.Core.Interfaces.IEquipmentService, RentKart.Infrastructure.Services.EquipmentService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IBusinessService, RentKart.Infrastructure.Services.BusinessService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IBookingService, RentKart.Infrastructure.Services.BookingService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IPaymentGateway, RentKart.Infrastructure.Services.DemoPaymentGateway>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IPaymentService, RentKart.Infrastructure.Services.PaymentService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IFileService, RentKart.Web.Services.FileService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

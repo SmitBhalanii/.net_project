@@ -139,6 +139,7 @@ public class BookingController : Controller
             SecurityDeposit = booking.SecurityDepositAmount,
             TotalAmount = booking.TotalAmount,
             Status = booking.Status,
+            PaymentStatus = booking.PaymentStatus,
             CustomerNote = booking.CustomerNote,
             CreatedAt = booking.CreatedAt
         };
@@ -163,7 +164,8 @@ public class BookingController : Controller
             StartDate = b.StartDate,
             EndDate = b.EndDate,
             TotalAmount = b.TotalAmount,
-            Status = b.Status
+            Status = b.Status,
+            PaymentStatus = b.PaymentStatus
         });
 
         return View(viewModels);
@@ -192,6 +194,7 @@ public class BookingController : Controller
             SecurityDeposit = booking.SecurityDepositAmount,
             TotalAmount = booking.TotalAmount,
             Status = booking.Status,
+            PaymentStatus = booking.PaymentStatus,
             CustomerNote = booking.CustomerNote,
             BusinessNote = booking.BusinessNote,
             CreatedAt = booking.CreatedAt
