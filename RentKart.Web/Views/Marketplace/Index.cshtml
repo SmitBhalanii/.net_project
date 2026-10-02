@@ -1,0 +1,68 @@
+@model IEnumerable<RentKart.Core.Entities.Equipment>
+@{
+    ViewData["Title"] = "Marketplace";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h2>@ViewData["Title"]</h2>
+        </div>
+        <div class="col-md-6">
+            <form asp-action="Index" method="get" class="d-flex gap-2">
+                <input type="text" name="searchTerm" class="form-control" placeholder="Search equipment..." value="@ViewBag.SearchTerm" />
+                <select name="categoryId" class="form-select w-auto">
+                    <option value="">All Categories</option>
+                    @foreach (var cat in ViewBag.Categories)
+                    {
+                        var isSelected = ViewBag.CategoryId == cat.Id ? "selected" : "";
+                        <!option value="@cat.Id" @isSelected>@cat.Name</!option>
+                    }
+                </select>
+                <input type="text" name="city" class="form-control w-auto" placeholder="City" value="@ViewBag.City" />
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    @if (item.EquipmentImages != null && item.EquipmentImages.Any())
+                    {
+                        var primaryImage = item.EquipmentImages.FirstOrDefault(img => img.IsPrimary) ?? item.EquipmentImages.First();
+                        <img src="@primaryImage.ImagePath" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="bg-light text-center d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <span class="text-muted">No Image</span>
+                        </div>
+                    }
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate" title="@item.Name">@item.Name</h5>
+                        <p class="card-text text-muted small mb-2">@item.Category.Name</p>
+                        <h6 class="text-primary mb-3">@item.RentalPrice.ToString("C") <small class="text-muted">/ @item.RentalPeriod</small></h6>
+                        
+                        <div class="mt-auto">
+                            <p class="small text-muted mb-2">
+                                <i class="bi bi-geo-alt"></i> @item.City, @item.State
+                            </p>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <h4 class="text-muted">No equipment found matching your criteria.</h4>
+                <a asp-action="Index" class="btn btn-link mt-2">Clear Filters</a>
+            </div>
+        }
+    </div>
+</div>

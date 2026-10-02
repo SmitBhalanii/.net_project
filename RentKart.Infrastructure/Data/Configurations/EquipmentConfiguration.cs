@@ -14,9 +14,13 @@ public class EquipmentConfiguration : IEntityTypeConfiguration<Equipment>
         builder.HasIndex(e => e.CategoryId);
         builder.HasIndex(e => e.Status);
         builder.HasIndex(e => e.IsActive);
+        builder.HasIndex(e => e.City);
 
-        builder.Property(e => e.RentalPricePerDay).HasColumnType("decimal(18,2)");
+        builder.Property(e => e.RentalPrice).HasColumnType("decimal(18,2)");
         builder.Property(e => e.SecurityDeposit).HasColumnType("decimal(18,2)");
+        
+        builder.Property(e => e.Name).HasMaxLength(255).IsRequired();
+        builder.Property(e => e.City).HasMaxLength(100).IsRequired();
 
         builder.HasMany(e => e.EquipmentImages)
             .WithOne(ei => ei.Equipment)

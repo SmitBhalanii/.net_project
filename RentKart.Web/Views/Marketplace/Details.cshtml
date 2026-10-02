@@ -1,0 +1,103 @@
+@model RentKart.Core.Entities.Equipment
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container mt-4 mb-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Marketplace</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index" asp-route-categoryId="@Model.CategoryId">@Model.Category.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row mt-4">
+        <div class="col-md-7 mb-4">
+            @if (Model.EquipmentImages != null && Model.EquipmentImages.Any())
+            {
+                var primaryImage = Model.EquipmentImages.FirstOrDefault(img => img.IsPrimary) ?? Model.EquipmentImages.First();
+                <div class="mb-3">
+                    <img src="@primaryImage.ImagePath" class="img-fluid rounded shadow-sm w-100" alt="@Model.Name" style="max-height: 500px; object-fit: cover;">
+                </div>
+                
+                @if (Model.EquipmentImages.Count > 1)
+                {
+                    <div class="d-flex gap-2 overflow-auto py-2">
+                        @foreach (var img in Model.EquipmentImages)
+                        {
+                            <img src="@img.ImagePath" class="img-thumbnail rounded" alt="Thumbnail" style="height: 80px; width: 120px; object-fit: cover; cursor: pointer;">
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="bg-light text-center d-flex align-items-center justify-content-center rounded" style="height: 400px;">
+                    <h3 class="text-muted">No Images Available</h3>
+                </div>
+            }
+
+            <div class="mt-5">
+                <h4 class="mb-3">Description</h4>
+                <p style="white-space: pre-line;">@Model.Description</p>
+            </div>
+            
+            <div class="mt-5">
+                <h4 class="mb-3">Specifications</h4>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Brand</span>
+                        <strong>@Model.Brand</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Model</span>
+                        <strong>@Model.Model</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Condition</span>
+                        <strong>@Model.Condition.ToString()</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Available Quantity</span>
+                        <strong>@Model.Quantity</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card shadow-sm sticky-top" style="top: 2rem;">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-primary mb-1">@Model.RentalPrice.ToString("C") <small class="text-muted fs-5">/ @Model.RentalPeriod</small></h2>
+                    <p class="text-muted small mb-4">Security Deposit: @Model.SecurityDeposit.ToString("C")</p>
+                    
+                    <div class="d-grid gap-2 mb-4">
+                        <button class="btn btn-primary btn-lg">Request Booking</button>
+                    </div>
+                    
+                    <hr class="my-4" />
+                    
+                    <h5 class="mb-3">Provider Information</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                            @Model.Business.BusinessName.Substring(0, 1).ToUpper()
+                        </div>
+                        <div>
+                            <h6 class="mb-0">@Model.Business.BusinessName</h6>
+                            <small class="text-muted"><i class="bi bi-geo-alt"></i> @Model.City, @Model.State @Model.PostalCode</small>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-light p-3 rounded">
+                        <h6 class="mb-2">Pickup Location</h6>
+                        <address class="mb-0 small text-muted">
+                            @Model.Business.Address<br />
+                            @Model.Business.City, @Model.Business.State @Model.Business.PostalCode
+                        </address>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

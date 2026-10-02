@@ -8,6 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<RentKart.Core.Interfaces.ICategoryService, RentKart.Infrastructure.Services.CategoryService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IEquipmentService, RentKart.Infrastructure.Services.EquipmentService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IFileService, RentKart.Web.Services.FileService>();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

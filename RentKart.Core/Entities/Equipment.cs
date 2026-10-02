@@ -19,7 +19,8 @@ public class Equipment
     public string? Description { get; set; }
     public string? Specifications { get; set; }
     
-    public decimal RentalPricePerDay { get; set; }
+    public decimal RentalPrice { get; set; }
+    public RentalPeriod RentalPeriod { get; set; }
     public decimal SecurityDeposit { get; set; }
     public int Quantity { get; set; }
     
@@ -27,6 +28,10 @@ public class Equipment
     public EquipmentStatus Status { get; set; }
     public bool IsActive { get; set; }
     
+    public string City { get; set; } = null!;
+    public string State { get; set; } = null!;
+    public string PostalCode { get; set; } = null!;
+
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
