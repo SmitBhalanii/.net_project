@@ -1,0 +1,105 @@
+@model IEnumerable<RentKart.Web.ViewModels.Booking.BusinessBookingViewModel>
+@{
+    ViewData["Title"] = "Booking Requests";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Booking Requests</h2>
+        <a asp-controller="BusinessDashboard" asp-action="Index" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You don't have any booking requests yet.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Booking Number</th>
+                        <th>Customer</th>
+                        <th>Equipment</th>
+                        <th>Dates</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var booking in Model)
+                    {
+                        <tr>
+                            <td><span class="fw-bold">@booking.BookingNumber</span></td>
+                            <td>@booking.CustomerName</td>
+                            <td>@booking.EquipmentName</td>
+                            <td>@booking.StartDate.ToString("dd MMM") - @booking.EndDate.ToString("dd MMM yyyy")</td>
+                            <td>@booking.TotalAmount.ToString("c")</td>
+                            <td>
+                                @if (booking.Status == RentKart.Core.Enums.BookingStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                                else if (booking.Status == RentKart.Core.Enums.BookingStatus.Approved)
+                                {
+                                    <span class="badge bg-success">Approved</span>
+                                }
+                                else if (booking.Status == RentKart.Core.Enums.BookingStatus.Rejected)
+                                {
+                                    <span class="badge bg-danger">Rejected</span>
+                                }
+                                else if (booking.Status == RentKart.Core.Enums.BookingStatus.Cancelled)
+                                {
+                                    <span class="badge bg-secondary">Cancelled</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info">@booking.Status</span>
+                                }
+                            </td>
+                            <td>
+                                @if (booking.Status == RentKart.Core.Enums.BookingStatus.Pending)
+                                {
+                                    <div class="d-flex gap-2">
+                                        <form asp-action="Approve" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@booking.Id" />
+                                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                        </form>
+                                        <form asp-action="Reject" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to reject this booking?');">
+                                            <input type="hidden" name="id" value="@booking.Id" />
+                                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-outline-secondary" disabled>No Action</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,64 @@
+@model RentKart.Web.ViewModels.Booking.BookingDetailsViewModel
+@{
+    ViewData["Title"] = "Booking Confirmation";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+            <h2 class="mt-3 mb-4">Booking Request Submitted</h2>
+            <p class="lead">Your rental request has been sent to the business for approval.</p>
+            <p>You will be notified once they respond.</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Booking Number: @Model.BookingNumber</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Equipment</div>
+                        <div class="col-sm-8 fw-bold">@Model.EquipmentName</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Business</div>
+                        <div class="col-sm-8">@Model.BusinessName</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Rental Period</div>
+                        <div class="col-sm-8">@Model.StartDate.ToString("dd MMM yyyy") &rarr; @Model.EndDate.ToString("dd MMM yyyy") (@Model.RentalDays days)</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Status</div>
+                        <div class="col-sm-8">
+                            <span class="badge bg-warning text-dark">@Model.Status.ToString()</span>
+                        </div>
+                    </div>
+                    
+                    <hr />
+                    
+                    <div class="row mb-2">
+                        <div class="col-sm-4 text-muted">Rental Amount</div>
+                        <div class="col-sm-8">@Model.RentalAmount.ToString("c")</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-4 text-muted">Security Deposit</div>
+                        <div class="col-sm-8">@Model.SecurityDeposit.ToString("c")</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 text-muted fw-bold">Total</div>
+                        <div class="col-sm-8 fw-bold fs-5">@Model.TotalAmount.ToString("c")</div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a asp-action="MyBookings" class="btn btn-primary">View My Bookings</a>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Return Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

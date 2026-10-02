@@ -36,7 +36,7 @@ public class Equipment
     public DateTime? UpdatedAt { get; set; }
 
     public ICollection<EquipmentImage> EquipmentImages { get; set; } = new List<EquipmentImage>();
-    public ICollection<BookingItem> BookingItems { get; set; } = new List<BookingItem>();
+    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
     public ICollection<WishlistItem> WishlistItems { get; set; } = new List<WishlistItem>();
     public ICollection<MaintenanceRecord> MaintenanceRecords { get; set; } = new List<MaintenanceRecord>();

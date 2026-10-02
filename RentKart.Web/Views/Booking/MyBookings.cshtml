@@ -1,0 +1,80 @@
+@model IEnumerable<RentKart.Web.ViewModels.Booking.BookingListViewModel>
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Bookings</h2>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You don't have any bookings yet. <a asp-controller="Marketplace" asp-action="Index">Browse rentals</a>.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Booking Number</th>
+                        <th>Equipment</th>
+                        <th>Business</th>
+                        <th>Dates</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var booking in Model)
+                    {
+                        <tr>
+                            <td><span class="fw-bold">@booking.BookingNumber</span></td>
+                            <td>@booking.EquipmentName</td>
+                            <td>@booking.BusinessName</td>
+                            <td>@booking.StartDate.ToString("dd MMM yyyy") - @booking.EndDate.ToString("dd MMM yyyy")</td>
+                            <td>@booking.TotalAmount.ToString("c")</td>
+                            <td>
+                                @if (booking.Status == RentKart.Core.Enums.BookingStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                                else if (booking.Status == RentKart.Core.Enums.BookingStatus.Approved)
+                                {
+                                    <span class="badge bg-success">Approved</span>
+                                }
+                                else if (booking.Status == RentKart.Core.Enums.BookingStatus.Rejected)
+                                {
+                                    <span class="badge bg-danger">Rejected</span>
+                                }
+                                else if (booking.Status == RentKart.Core.Enums.BookingStatus.Cancelled)
+                                {
+                                    <span class="badge bg-secondary">Cancelled</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info">@booking.Status</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@booking.Id" class="btn btn-sm btn-outline-primary">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
