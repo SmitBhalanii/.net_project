@@ -25,37 +25,59 @@ namespace RentKart.Infrastructure.Services
             var start = startDate ?? DateTime.UtcNow.AddDays(-30);
             var end = endDate ?? DateTime.UtcNow;
 
-            // Total users with 'Customer' role? Identity doesn't store role natively in Users table easily without join
-            // Let's count by Bookings/Businesses logic or just total users
             var totalUsers = await _db.Users.CountAsync();
             var totalBusinesses = await _db.Businesses.CountAsync();
             var pendingVendors = await _db.Businesses.CountAsync(b => b.ApprovalStatus == BusinessApprovalStatus.Pending);
             var approvedVendors = await _db.Businesses.CountAsync(b => b.ApprovalStatus == BusinessApprovalStatus.Approved);
             var suspendedVendors = await _db.Businesses.CountAsync(b => b.ApprovalStatus == BusinessApprovalStatus.Suspended);
-            var totalCustomers = totalUsers - totalBusinesses; // Rough estimate since admin is included, but we can do a better query if needed
+            var totalCustomers = totalUsers - totalBusinesses; 
             
-            var totalEquipment = await _db.Equipment.CountAsync();
+            var equipment = await _db.Equipment.AsNoTracking().ToListAsync();
+            var totalEquipment = equipment.Count;
+            var availableEquipment = equipment.Count(e => e.Status == EquipmentStatus.Active);
+            var rentedEquipment = equipment.Count(e => e.Status == EquipmentStatus.Rented);
+            var maintenanceEquipment = equipment.Count(e => e.Status == EquipmentStatus.UnderMaintenance);
+            var inactiveEquipment = equipment.Count(e => e.Status == EquipmentStatus.Inactive);
+
             var totalBookings = await _db.Bookings.CountAsync(b => b.CreatedAt >= start && b.CreatedAt <= end);
+            var pendingBookings = await _db.Bookings.CountAsync(b => b.Status == BookingStatus.Pending && b.CreatedAt >= start && b.CreatedAt <= end);
+            var confirmedBookings = await _db.Bookings.CountAsync(b => b.Status == BookingStatus.Confirmed && b.CreatedAt >= start && b.CreatedAt <= end);
+            var cancelledBookings = await _db.Bookings.CountAsync(b => b.Status == BookingStatus.Cancelled && b.CreatedAt >= start && b.CreatedAt <= end);
+            var completedBookingsCount = await _db.Bookings.CountAsync(b => b.Status == BookingStatus.Completed && b.CreatedAt >= start && b.CreatedAt <= end);
+
             var activeRentals = await _db.Rentals.CountAsync(r => r.Status == RentalStatus.Active);
+            var completedRentals = await _db.Rentals.CountAsync(r => r.Status == RentalStatus.Completed);
+            var overdueRentals = await _db.Rentals.CountAsync(r => r.Status == RentalStatus.Active && r.ExpectedReturnDate < DateTime.UtcNow);
+            var returnedRentals = await _db.Rentals.CountAsync(r => r.Status == RentalStatus.Returned);
 
-            // Revenue: successful payments for rentals
-            var successfulPayments = _db.Payments
-                .Where(p => p.PaymentStatus == PaymentStatus.Succeeded && p.CreatedAt >= start && p.CreatedAt <= end);
+            // Revenue calculation using only RentalAmount. Ignore SecurityDeposit.
+            var completedBookings = await _db.Bookings.AsNoTracking()
+                .Where(b => (b.PaymentStatus == PaymentStatus.Succeeded || b.PaymentStatus == PaymentStatus.PartiallyRefunded) && b.CreatedAt >= start && b.CreatedAt <= end)
+                .ToListAsync();
+
+            var totalRentalRevenue = completedBookings.Sum(b => b.RentalAmount);
             
-            var totalRevenue = await successfulPayments.SumAsync(p => p.Amount);
+            var totalRefunds = await _db.Refunds.AsNoTracking()
+                .Where(r => r.CreatedAt >= start && r.CreatedAt <= end)
+                .SumAsync(r => r.Amount);
+                
+            var totalSuccessfulPayments = await _db.Payments.AsNoTracking()
+                .Where(p => p.PaymentStatus == PaymentStatus.Succeeded && p.CreatedAt >= start && p.CreatedAt <= end)
+                .SumAsync(p => p.Amount);
 
-            // Revenue Trend (Last 12 months by default)
+            // Revenue Trend (Last 12 months)
             var trendStart = DateTime.UtcNow.AddMonths(-11).Date;
             trendStart = new DateTime(trendStart.Year, trendStart.Month, 1);
             
-            var twelveMonthPayments = await _db.Payments
-                .Where(p => p.PaymentStatus == PaymentStatus.Succeeded && p.CreatedAt >= trendStart)
-                .GroupBy(p => new { p.CreatedAt.Year, p.CreatedAt.Month })
+            // Only using RentalAmount for trend where Payment is succeeded
+            var twelveMonthBookings = await _db.Bookings.AsNoTracking()
+                .Where(b => (b.PaymentStatus == PaymentStatus.Succeeded || b.PaymentStatus == PaymentStatus.PartiallyRefunded) && b.CreatedAt >= trendStart)
+                .GroupBy(b => new { b.CreatedAt.Year, b.CreatedAt.Month })
                 .Select(g => new 
                 { 
                     Year = g.Key.Year, 
                     Month = g.Key.Month, 
-                    Revenue = g.Sum(x => x.Amount) 
+                    Revenue = g.Sum(x => x.RentalAmount) 
                 })
                 .ToListAsync();
 
@@ -63,7 +85,7 @@ namespace RentKart.Infrastructure.Services
             for (int i = 0; i < 12; i++)
             {
                 var monthDate = trendStart.AddMonths(i);
-                var revenue = twelveMonthPayments
+                var revenue = twelveMonthBookings
                     .Where(p => p.Year == monthDate.Year && p.Month == monthDate.Month)
                     .Select(p => p.Revenue)
                     .FirstOrDefault();
@@ -76,7 +98,7 @@ namespace RentKart.Infrastructure.Services
             }
 
             // Booking Status Distribution
-            var bookingDistribution = await _db.Bookings
+            var bookingDistribution = await _db.Bookings.AsNoTracking()
                 .Where(b => b.CreatedAt >= start && b.CreatedAt <= end)
                 .GroupBy(b => b.Status)
                 .Select(g => new BookingStatusItemDto
@@ -87,14 +109,14 @@ namespace RentKart.Infrastructure.Services
                 .ToListAsync();
 
             // Top Equipment
-            var topEquipment = await _db.Equipment
+            var topEquipment = await _db.Equipment.AsNoTracking()
                 .Include(e => e.Business)
                 .Include(e => e.Category)
                 .Select(e => new
                 {
                     Equipment = e,
                     RentalCount = e.Bookings.Count(b => b.Status == BookingStatus.Completed),
-                    Revenue = e.Bookings.SelectMany(b => b.Payments).Where(p => p.PaymentStatus == PaymentStatus.Succeeded).Sum(p => (decimal?)p.Amount) ?? 0,
+                    Revenue = e.Bookings.Where(b => b.PaymentStatus == PaymentStatus.Succeeded || b.PaymentStatus == PaymentStatus.PartiallyRefunded).Sum(b => (decimal?)b.RentalAmount) ?? 0,
                     AvgRating = e.Reviews.Where(r => r.Status == ReviewStatus.Published).Average(r => (double?)r.EquipmentRating) ?? 0
                 })
                 .OrderByDescending(x => x.RentalCount)
@@ -109,28 +131,30 @@ namespace RentKart.Infrastructure.Services
                 CategoryName = x.Equipment.Category.Name,
                 RentalCount = x.RentalCount,
                 Revenue = x.Revenue,
-                AverageRating = x.AvgRating
+                AverageRating = x.AvgRating,
+                Status = x.Equipment.Status.ToString()
             }).ToList();
 
             // Top Categories
-            var topCategories = await _db.Categories
+            var topCategories = await _db.Categories.AsNoTracking()
                 .Select(c => new TopCategoryItemDto
                 {
                     CategoryName = c.Name,
+                    EquipmentCount = c.Equipment.Count,
                     RentalCount = c.Equipment.SelectMany(e => e.Bookings).Count(b => b.Status == BookingStatus.Completed),
-                    Revenue = c.Equipment.SelectMany(e => e.Bookings).SelectMany(b => b.Payments).Where(p => p.PaymentStatus == PaymentStatus.Succeeded).Sum(p => (decimal?)p.Amount) ?? 0
+                    Revenue = c.Equipment.SelectMany(e => e.Bookings).Where(b => b.PaymentStatus == PaymentStatus.Succeeded || b.PaymentStatus == PaymentStatus.PartiallyRefunded).Sum(b => (decimal?)b.RentalAmount) ?? 0
                 })
                 .OrderByDescending(x => x.RentalCount)
                 .Take(5)
                 .ToListAsync();
 
             // Top Businesses
-            var topBusinesses = await _db.Businesses
+            var topBusinesses = await _db.Businesses.AsNoTracking()
                 .Select(b => new
                 {
                     Business = b,
                     CompletedRentals = b.Bookings.Count(bk => bk.Status == BookingStatus.Completed),
-                    Revenue = b.Bookings.SelectMany(bk => bk.Payments).Where(p => p.PaymentStatus == PaymentStatus.Succeeded).Sum(p => (decimal?)p.Amount) ?? 0,
+                    Revenue = b.Bookings.Where(bk => bk.PaymentStatus == PaymentStatus.Succeeded || bk.PaymentStatus == PaymentStatus.PartiallyRefunded).Sum(bk => (decimal?)bk.RentalAmount) ?? 0,
                     AvgRating = b.Reviews.Where(r => r.Status == ReviewStatus.Published).Average(r => (double?)r.BusinessRating) ?? 0,
                     ActiveEquip = b.Equipment.Count(e => e.IsActive)
                 })
@@ -157,10 +181,28 @@ namespace RentKart.Infrastructure.Services
                 PendingVendors = pendingVendors,
                 ApprovedVendors = approvedVendors,
                 SuspendedVendors = suspendedVendors,
+                
                 TotalEquipment = totalEquipment,
+                AvailableEquipment = availableEquipment,
+                RentedEquipment = rentedEquipment,
+                MaintenanceEquipment = maintenanceEquipment,
+                InactiveEquipment = inactiveEquipment,
+
                 TotalBookings = totalBookings,
+                PendingBookings = pendingBookings,
+                ConfirmedBookings = confirmedBookings,
+                CancelledBookings = cancelledBookings,
+                CompletedBookings = completedBookingsCount,
+
                 ActiveRentals = activeRentals,
-                TotalRevenue = totalRevenue,
+                CompletedRentals = completedRentals,
+                OverdueRentals = overdueRentals,
+                ReturnedRentals = returnedRentals,
+
+                TotalRentalRevenue = totalRentalRevenue,
+                TotalRefunds = totalRefunds,
+                TotalSuccessfulPayments = totalSuccessfulPayments,
+                
                 StartDate = start,
                 EndDate = end,
                 RevenueTrend = revenueTrend,
@@ -176,40 +218,49 @@ namespace RentKart.Infrastructure.Services
             var start = startDate ?? DateTime.UtcNow.AddDays(-30);
             var end = endDate ?? DateTime.UtcNow;
 
-            var businessQuery = _db.Businesses.Where(b => b.Id == businessId);
-            
             var totalEquipment = await _db.Equipment.CountAsync(e => e.BusinessId == businessId);
             var activeEquipment = await _db.Equipment.CountAsync(e => e.BusinessId == businessId && e.IsActive);
+            
             var totalBookings = await _db.Bookings.CountAsync(b => b.BusinessId == businessId && b.CreatedAt >= start && b.CreatedAt <= end);
             var pendingBookings = await _db.Bookings.CountAsync(b => b.BusinessId == businessId && b.Status == BookingStatus.Pending);
+            var confirmedBookings = await _db.Bookings.CountAsync(b => b.BusinessId == businessId && b.Status == BookingStatus.Confirmed);
+            var cancelledBookings = await _db.Bookings.CountAsync(b => b.BusinessId == businessId && b.Status == BookingStatus.Cancelled);
+            var completedBookingsCount = await _db.Bookings.CountAsync(b => b.BusinessId == businessId && b.Status == BookingStatus.Completed);
             
+            var upcomingRentals = await _db.Rentals.CountAsync(r => r.BusinessId == businessId && (r.Status == RentalStatus.ReadyForPickup || r.Status == RentalStatus.NotReady));
             var activeRentals = await _db.Rentals.CountAsync(r => r.BusinessId == businessId && (r.Status == RentalStatus.Active));
             var completedRentals = await _db.Rentals.CountAsync(r => r.BusinessId == businessId && r.Status == RentalStatus.Completed);
+            var overdueRentals = await _db.Rentals.CountAsync(r => r.BusinessId == businessId && r.Status == RentalStatus.Active && r.ExpectedReturnDate < DateTime.UtcNow);
             
-            var successfulPayments = _db.Payments
-                .Where(p => p.Booking.BusinessId == businessId && p.PaymentStatus == PaymentStatus.Succeeded && p.CreatedAt >= start && p.CreatedAt <= end);
-            
-            var totalRevenue = await successfulPayments.SumAsync(p => p.Amount);
+            var completedBookings = await _db.Bookings.AsNoTracking()
+                .Where(b => b.BusinessId == businessId && (b.PaymentStatus == PaymentStatus.Succeeded || b.PaymentStatus == PaymentStatus.PartiallyRefunded) && b.CreatedAt >= start && b.CreatedAt <= end)
+                .ToListAsync();
 
-            var avgRating = await _db.Reviews
+            var grossRentalRevenue = completedBookings.Sum(b => b.RentalAmount);
+
+            var totalRefunds = await _db.Refunds.AsNoTracking()
+                .Where(r => r.Booking.BusinessId == businessId && r.CreatedAt >= start && r.CreatedAt <= end)
+                .SumAsync(r => r.Amount);
+
+            var avgRating = await _db.Reviews.AsNoTracking()
                 .Where(r => r.BusinessId == businessId && r.Status == ReviewStatus.Published)
                 .AverageAsync(r => (double?)r.BusinessRating) ?? 0;
                 
-            var totalReviews = await _db.Reviews
+            var totalReviews = await _db.Reviews.AsNoTracking()
                 .CountAsync(r => r.BusinessId == businessId && r.Status == ReviewStatus.Published);
 
-            // Revenue Trend (Last 12 months by default)
+            // Revenue Trend (Last 12 months)
             var trendStart = DateTime.UtcNow.AddMonths(-11).Date;
             trendStart = new DateTime(trendStart.Year, trendStart.Month, 1);
             
-            var twelveMonthPayments = await _db.Payments
-                .Where(p => p.Booking.BusinessId == businessId && p.PaymentStatus == PaymentStatus.Succeeded && p.CreatedAt >= trendStart)
-                .GroupBy(p => new { p.CreatedAt.Year, p.CreatedAt.Month })
+            var twelveMonthBookings = await _db.Bookings.AsNoTracking()
+                .Where(b => b.BusinessId == businessId && (b.PaymentStatus == PaymentStatus.Succeeded || b.PaymentStatus == PaymentStatus.PartiallyRefunded) && b.CreatedAt >= trendStart)
+                .GroupBy(b => new { b.CreatedAt.Year, b.CreatedAt.Month })
                 .Select(g => new 
                 { 
                     Year = g.Key.Year, 
                     Month = g.Key.Month, 
-                    Revenue = g.Sum(x => x.Amount) 
+                    Revenue = g.Sum(x => x.RentalAmount) 
                 })
                 .ToListAsync();
 
@@ -217,7 +268,7 @@ namespace RentKart.Infrastructure.Services
             for (int i = 0; i < 12; i++)
             {
                 var monthDate = trendStart.AddMonths(i);
-                var revenue = twelveMonthPayments
+                var revenue = twelveMonthBookings
                     .Where(p => p.Year == monthDate.Year && p.Month == monthDate.Month)
                     .Select(p => p.Revenue)
                     .FirstOrDefault();
@@ -230,7 +281,7 @@ namespace RentKart.Infrastructure.Services
             }
 
             // Booking Status Distribution
-            var bookingDistribution = await _db.Bookings
+            var bookingDistribution = await _db.Bookings.AsNoTracking()
                 .Where(b => b.BusinessId == businessId && b.CreatedAt >= start && b.CreatedAt <= end)
                 .GroupBy(b => b.Status)
                 .Select(g => new BookingStatusItemDto
@@ -241,69 +292,108 @@ namespace RentKart.Infrastructure.Services
                 .ToListAsync();
 
             // Equipment Performance
-            var equipmentPerformance = await _db.Equipment
+            var equipmentPerformance = await _db.Equipment.AsNoTracking()
+                .Include(e => e.Category)
                 .Where(e => e.BusinessId == businessId)
                 .Select(e => new EquipmentPerformanceItemDto
                 {
                     EquipmentName = e.Name,
+                    CategoryName = e.Category.Name,
                     Bookings = e.Bookings.Count,
                     CompletedRentals = e.Bookings.Count(b => b.Status == BookingStatus.Completed),
-                    Revenue = e.Bookings.SelectMany(b => b.Payments).Where(p => p.PaymentStatus == PaymentStatus.Succeeded).Sum(p => (decimal?)p.Amount) ?? 0,
+                    Revenue = e.Bookings.Where(b => b.PaymentStatus == PaymentStatus.Succeeded || b.PaymentStatus == PaymentStatus.PartiallyRefunded).Sum(b => (decimal?)b.RentalAmount) ?? 0,
                     AverageRating = e.Reviews.Where(r => r.Status == ReviewStatus.Published).Average(r => (double?)r.EquipmentRating) ?? 0,
-                    IsAvailable = e.IsActive
+                    Status = e.Status.ToString()
                 })
                 .OrderByDescending(x => x.CompletedRentals)
                 .Take(10)
+                .ToListAsync();
+                
+            // Category Performance
+            var categoryPerformance = await _db.Categories.AsNoTracking()
+                .Select(c => new TopCategoryItemDto
+                {
+                    CategoryName = c.Name,
+                    EquipmentCount = c.Equipment.Count(e => e.BusinessId == businessId),
+                    RentalCount = c.Equipment.Where(e => e.BusinessId == businessId).SelectMany(e => e.Bookings).Count(b => b.Status == BookingStatus.Completed),
+                    Revenue = c.Equipment.Where(e => e.BusinessId == businessId).SelectMany(e => e.Bookings).Where(b => b.PaymentStatus == PaymentStatus.Succeeded || b.PaymentStatus == PaymentStatus.PartiallyRefunded).Sum(b => (decimal?)b.RentalAmount) ?? 0
+                })
+                .Where(c => c.EquipmentCount > 0)
+                .OrderByDescending(x => x.Revenue)
                 .ToListAsync();
 
             return new BusinessDashboardDto
             {
                 TotalEquipment = totalEquipment,
                 ActiveEquipment = activeEquipment,
+                
                 TotalBookings = totalBookings,
                 PendingBookings = pendingBookings,
+                ConfirmedBookings = confirmedBookings,
+                CancelledBookings = cancelledBookings,
+                CompletedBookings = completedBookingsCount,
+                
+                UpcomingRentals = upcomingRentals,
                 ActiveRentals = activeRentals,
                 CompletedRentals = completedRentals,
-                TotalRevenue = totalRevenue,
+                OverdueRentals = overdueRentals,
+                
+                GrossRentalRevenue = grossRentalRevenue,
+                TotalRefunds = totalRefunds,
+                
                 AverageRating = avgRating,
                 TotalReviews = totalReviews,
                 StartDate = start,
                 EndDate = end,
                 RevenueTrend = revenueTrend,
                 BookingStatusDistribution = bookingDistribution,
-                EquipmentPerformance = equipmentPerformance
+                EquipmentPerformance = equipmentPerformance,
+                CategoryPerformance = categoryPerformance
             };
         }
 
         public async Task<CustomerStatisticsDto> GetCustomerStatisticsAsync(string customerId)
         {
             var totalBookings = await _db.Bookings.CountAsync(b => b.CustomerId == customerId);
+            var confirmedBookings = await _db.Bookings.CountAsync(b => b.CustomerId == customerId && b.Status == BookingStatus.Confirmed);
+            var completedBookings = await _db.Bookings.CountAsync(b => b.CustomerId == customerId && b.Status == BookingStatus.Completed);
+            var cancelledBookings = await _db.Bookings.CountAsync(b => b.CustomerId == customerId && b.Status == BookingStatus.Cancelled);
+            
             var activeRentals = await _db.Rentals.CountAsync(r => r.CustomerId == customerId && (r.Status == RentalStatus.Active));
             var completedRentals = await _db.Rentals.CountAsync(r => r.CustomerId == customerId && r.Status == RentalStatus.Completed);
-            var cancelledBookings = await _db.Bookings.CountAsync(b => b.CustomerId == customerId && b.Status == BookingStatus.Cancelled);
+            var pendingReturns = await _db.Rentals.CountAsync(r => r.CustomerId == customerId && r.Status == RentalStatus.Active);
+            
             var wishlistItems = await _db.WishlistItems.CountAsync(w => w.CustomerId == customerId);
             
             var reviewsWritten = await _db.Reviews.CountAsync(r => r.CustomerId == customerId && r.Status == ReviewStatus.Published);
-            var avgRatingGiven = await _db.Reviews
+            var avgRatingGiven = await _db.Reviews.AsNoTracking()
                 .Where(r => r.CustomerId == customerId && r.Status == ReviewStatus.Published)
                 .AverageAsync(r => (double?)((r.EquipmentRating + r.BusinessRating) / 2.0)) ?? 0;
 
-            var totalSpent = await _db.Payments
-                .Where(p => p.CustomerId == customerId && p.PaymentStatus == PaymentStatus.Succeeded)
-                .SumAsync(p => p.Amount);
+            var userBookings = await _db.Bookings.AsNoTracking()
+                .Where(b => b.CustomerId == customerId && (b.PaymentStatus == PaymentStatus.Succeeded || b.PaymentStatus == PaymentStatus.PartiallyRefunded))
+                .ToListAsync();
 
-            // Monthly Rentals
+            var totalRentalSpending = userBookings.Sum(b => b.RentalAmount);
+            var totalSecurityDepositsPaid = userBookings.Sum(b => b.SecurityDepositAmount);
+            
+            var totalRefunds = await _db.Refunds.AsNoTracking()
+                .Where(r => r.CustomerId == customerId)
+                .SumAsync(r => r.Amount);
+
+            // Monthly Rentals and Spending
             var trendStart = DateTime.UtcNow.AddMonths(-5).Date;
             trendStart = new DateTime(trendStart.Year, trendStart.Month, 1);
 
-            var sixMonthRentals = await _db.Rentals
-                .Where(r => r.CustomerId == customerId && r.CreatedAt >= trendStart)
-                .GroupBy(r => new { r.CreatedAt.Year, r.CreatedAt.Month })
+            var sixMonthBookings = await _db.Bookings.AsNoTracking()
+                .Where(b => b.CustomerId == customerId && (b.PaymentStatus == PaymentStatus.Succeeded || b.PaymentStatus == PaymentStatus.PartiallyRefunded) && b.CreatedAt >= trendStart)
+                .GroupBy(b => new { b.CreatedAt.Year, b.CreatedAt.Month })
                 .Select(g => new
                 {
                     Year = g.Key.Year,
                     Month = g.Key.Month,
-                    Count = g.Count()
+                    Count = g.Count(),
+                    Spending = g.Sum(x => x.RentalAmount)
                 })
                 .ToListAsync();
 
@@ -311,27 +401,27 @@ namespace RentKart.Infrastructure.Services
             for (int i = 0; i < 6; i++)
             {
                 var monthDate = trendStart.AddMonths(i);
-                var count = sixMonthRentals
+                var data = sixMonthBookings
                     .Where(r => r.Year == monthDate.Year && r.Month == monthDate.Month)
-                    .Select(r => r.Count)
                     .FirstOrDefault();
 
                 monthlyRentals.Add(new MonthlyRentalItemDto
                 {
                     Month = monthDate.ToString("MMM yyyy"),
-                    Count = count
+                    Count = data?.Count ?? 0,
+                    Spending = data?.Spending ?? 0
                 });
             }
 
             // Top Categories
-            var topCategories = await _db.Rentals
+            var topCategories = await _db.Rentals.AsNoTracking()
                 .Where(r => r.CustomerId == customerId)
                 .GroupBy(r => r.Equipment.Category.Name)
                 .Select(g => new TopCategoryItemDto
                 {
                     CategoryName = g.Key,
                     RentalCount = g.Count(),
-                    Revenue = 0 // Not relevant for customer spending breakdown usually, or we can calculate it
+                    Revenue = g.Sum(r => r.Booking.RentalAmount)
                 })
                 .OrderByDescending(x => x.RentalCount)
                 .Take(5)
@@ -340,13 +430,22 @@ namespace RentKart.Infrastructure.Services
             return new CustomerStatisticsDto
             {
                 TotalBookings = totalBookings,
+                ConfirmedBookings = confirmedBookings,
+                CompletedBookings = completedBookings,
+                CancelledBookings = cancelledBookings,
+                
                 ActiveRentals = activeRentals,
                 CompletedRentals = completedRentals,
-                CancelledBookings = cancelledBookings,
+                PendingReturns = pendingReturns,
+                
+                TotalRentalSpending = totalRentalSpending,
+                TotalSecurityDepositsPaid = totalSecurityDepositsPaid,
+                TotalRefunds = totalRefunds,
+                
                 WishlistItems = wishlistItems,
                 ReviewsWritten = reviewsWritten,
-                TotalSpent = totalSpent,
                 AverageRatingGiven = avgRatingGiven,
+                
                 MonthlyRentals = monthlyRentals,
                 TopCategories = topCategories
             };

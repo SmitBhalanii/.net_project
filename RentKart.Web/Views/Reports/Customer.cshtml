@@ -13,6 +13,7 @@
             <a asp-controller="Rental" asp-action="MyRentals" class="dashboard-nav-item"><i class="bi bi-arrow-left-right me-2"></i> Rentals</a>
             <a asp-controller="Wishlist" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-heart me-2"></i> Wishlist</a>
             <a asp-controller="Review" asp-action="MyReviews" class="dashboard-nav-item"><i class="bi bi-star me-2"></i> Reviews</a>
+            <a asp-controller="CustomerFinancial" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-cash-stack me-2"></i> Financials</a>
             <a asp-controller="Notification" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-bell me-2"></i> Notifications</a>
             <a asp-controller="Reports" asp-action="Customer" class="dashboard-nav-item active"><i class="bi bi-bar-chart me-2"></i> My Statistics</a>
         </div>
@@ -25,7 +26,7 @@
 
         <!-- KPI Cards -->
         <div class="row g-3 mb-4">
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <h6 class="text-muted mb-2">Total Bookings</h6>
@@ -33,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <h6 class="text-muted mb-2">Active Rentals</h6>
@@ -41,7 +42,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <h6 class="text-muted mb-2">Completed Rentals</h6>
@@ -49,23 +50,40 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
-                        <h6 class="text-muted mb-2">Total Spent</h6>
-                        <h3 class="fw-bold text-danger mb-0">₹@Model.TotalSpent.ToString("N0")</h3>
+                        <h6 class="text-muted mb-2">Total Rental Spending</h6>
+                        <h3 class="fw-bold text-danger mb-0">@Model.TotalRentalSpending.ToString("C")</h3>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-2">
+            
+            <div class="col-md-4 col-lg-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total Deposits Paid</h6>
+                        <h3 class="fw-bold text-info mb-0">@Model.TotalSecurityDepositsPaid.ToString("C")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total Refunds Received</h6>
+                        <h3 class="fw-bold text-success mb-0">@Model.TotalRefunds.ToString("C")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <h6 class="text-muted mb-2">Wishlist Items</h6>
-                        <h3 class="fw-bold text-info mb-0">@Model.WishlistItems.ToString("N0")</h3>
+                        <h3 class="fw-bold text-primary mb-0">@Model.WishlistItems.ToString("N0")</h3>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <h6 class="text-muted mb-2">Avg Rating Given</h6>
@@ -86,14 +104,14 @@
         </div>
 
         <div class="row mb-4">
-            <!-- Monthly Rentals Trend -->
+            <!-- Monthly Spending Trend -->
             <div class="col-lg-8">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-white border-0 py-3">
-                        <h5 class="mb-0 fw-bold">My Rental History (Last 6 Months)</h5>
+                        <h5 class="mb-0 fw-bold">My Rental Spending (Last 6 Months)</h5>
                     </div>
                     <div class="card-body">
-                        <canvas id="monthlyRentalsChart" style="max-height: 300px;"></canvas>
+                        <canvas id="monthlySpendingChart" style="max-height: 300px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -134,32 +152,52 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            // Monthly Rentals Chart
-            const monthlyRentalsCtx = document.getElementById('monthlyRentalsChart')?.getContext('2d');
-            if (monthlyRentalsCtx) {
+            // Monthly Spending Chart
+            const monthlySpendingCtx = document.getElementById('monthlySpendingChart')?.getContext('2d');
+            if (monthlySpendingCtx) {
                 const months = @Html.Raw(Json.Serialize(Model.MonthlyRentals.Select(r => r.Month)));
-                const counts = @Html.Raw(Json.Serialize(Model.MonthlyRentals.Select(r => r.Count)));
+                const spending = @Html.Raw(Json.Serialize(Model.MonthlyRentals.Select(r => r.Spending)));
                 
-                new Chart(monthlyRentalsCtx, {
-                    type: 'bar',
+                new Chart(monthlySpendingCtx, {
+                    type: 'line',
                     data: {
                         labels: months,
                         datasets: [{
-                            label: 'Rentals',
-                            data: counts,
-                            backgroundColor: '#0d6efd',
-                            borderRadius: 4
+                            label: 'Rental Spending',
+                            data: spending,
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            fill: true,
+                            tension: 0.3
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
                         scales: { 
                             y: { 
                                 beginAtZero: true,
                                 ticks: {
-                                    stepSize: 1
+                                    callback: function(value) {
+                                        return '?' + value;
+                                    }
                                 }
                             } 
                         }

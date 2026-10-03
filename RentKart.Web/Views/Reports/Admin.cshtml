@@ -9,9 +9,11 @@
         <div class="p-4">
             <h5 class="fw-bold text-primary mb-4">Admin Dashboard</h5>
             <a asp-controller="AdminDashboard" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a href="#" class="dashboard-nav-item"><i class="bi bi-people me-2"></i> Customers</a>
+            <a asp-controller="AdminUser" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-people me-2"></i> Users</a>
+            <a asp-controller="AdminBusiness" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-shop me-2"></i> Businesses</a>
             <a asp-controller="Category" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-tags me-2"></i> Categories</a>
             <a asp-controller="Review" asp-action="Pending" class="dashboard-nav-item"><i class="bi bi-star-half me-2"></i> Reviews</a>
+            <a asp-controller="AdminFinancial" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-cash-stack me-2"></i> Financials</a>
             <a asp-controller="Notification" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-bell me-2"></i> Notifications</a>
             <a asp-controller="Reports" asp-action="Admin" class="dashboard-nav-item active"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports & Analytics</a>
         </div>
@@ -33,6 +35,7 @@
                 <div class="align-self-end">
                     <button type="submit" class="btn btn-primary btn-sm">Filter</button>
                     <a asp-action="Admin" class="btn btn-outline-secondary btn-sm">Reset</a>
+                    <a asp-action="ExportAdmin" asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")" asp-route-endDate="@Model.EndDate.ToString("yyyy-MM-dd")" class="btn btn-outline-success btn-sm ms-2"><i class="bi bi-file-earmark-excel"></i> Export CSV</a>
                 </div>
             </form>
         </div>
@@ -44,51 +47,73 @@
 
         <!-- KPI Cards -->
         <div class="row g-3 mb-4">
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
-                        <h6 class="text-muted mb-2">Users</h6>
+                        <h6 class="text-muted mb-2">Total Users</h6>
                         <h3 class="fw-bold text-primary mb-0">@Model.TotalUsers.ToString("N0")</h3>
+                        <small class="text-muted">(@Model.TotalCustomers Customers)</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <h6 class="text-muted mb-2">Businesses</h6>
                         <h3 class="fw-bold text-success mb-0">@Model.TotalBusinesses.ToString("N0")</h3>
+                        <small class="text-muted">(@Model.PendingVendors pending)</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <h6 class="text-muted mb-2">Equipment</h6>
                         <h3 class="fw-bold text-info mb-0">@Model.TotalEquipment.ToString("N0")</h3>
+                        <small class="text-muted">(@Model.AvailableEquipment available, @Model.RentedEquipment rented)</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <h6 class="text-muted mb-2">Bookings</h6>
                         <h3 class="fw-bold text-warning mb-0">@Model.TotalBookings.ToString("N0")</h3>
+                        <small class="text-muted">(@Model.CompletedBookings completed, @Model.CancelledBookings cancelled)</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-2">
+            
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
-                        <h6 class="text-muted mb-2">Revenue</h6>
-                        <h3 class="fw-bold text-success mb-0">₹@Model.TotalRevenue.ToString("N0")</h3>
+                        <h6 class="text-muted mb-2">Gross Rental Revenue</h6>
+                        <h3 class="fw-bold text-success mb-0">@Model.TotalRentalRevenue.ToString("C")</h3>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-lg-2">
+            <div class="col-md-4 col-lg-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total Refunds</h6>
+                        <h3 class="fw-bold text-danger mb-0">@Model.TotalRefunds.ToString("C")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Net Revenue</h6>
+                        <h3 class="fw-bold text-success mb-0">@Model.NetRevenue.ToString("C")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
                 <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body">
                         <h6 class="text-muted mb-2">Active Rentals</h6>
                         <h3 class="fw-bold text-primary mb-0">@Model.ActiveRentals.ToString("N0")</h3>
+                        <small class="text-danger">(@Model.OverdueRentals overdue)</small>
                     </div>
                 </div>
             </div>
@@ -99,7 +124,7 @@
             <div class="col-lg-8">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-white border-0 py-3">
-                        <h5 class="mb-0 fw-bold">Revenue Trend (Last 12 Months)</h5>
+                        <h5 class="mb-0 fw-bold">Platform Gross Revenue Trend (Last 12 Months)</h5>
                     </div>
                     <div class="card-body">
                         <canvas id="revenueTrendChart" style="max-height: 300px;"></canvas>
@@ -132,7 +157,7 @@
             <div class="col-12">
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white border-0 py-3">
-                        <h5 class="mb-0 fw-bold">Top Categories</h5>
+                        <h5 class="mb-0 fw-bold">Category Performance</h5>
                     </div>
                     <div class="card-body">
                         @if (!Model.TopCategories.Any())
@@ -141,6 +166,29 @@
                         }
                         else
                         {
+                            <div class="table-responsive mb-4">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Category</th>
+                                            <th class="text-center">Equipment Count</th>
+                                            <th class="text-center">Rentals</th>
+                                            <th class="text-end">Revenue</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var cat in Model.TopCategories)
+                                        {
+                                            <tr>
+                                                <td class="fw-bold">@cat.CategoryName</td>
+                                                <td class="text-center">@cat.EquipmentCount</td>
+                                                <td class="text-center">@cat.RentalCount</td>
+                                                <td class="text-end text-success fw-bold">@cat.Revenue.ToString("C")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                             <canvas id="topCategoriesChart" style="max-height: 300px;"></canvas>
                         }
                     </div>
@@ -163,6 +211,7 @@
                                     <th>Equipment</th>
                                     <th>Business</th>
                                     <th>Category</th>
+                                    <th class="text-center">Status</th>
                                     <th class="text-center">Rentals</th>
                                     <th class="text-end">Revenue</th>
                                     <th class="text-center">Avg Rating</th>
@@ -172,7 +221,7 @@
                                 @if (!Model.TopEquipment.Any())
                                 {
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted py-4">No data available.</td>
+                                        <td colspan="8" class="text-center text-muted py-4">No data available.</td>
                                     </tr>
                                 }
                                 else
@@ -184,8 +233,9 @@
                                             <td>@item.EquipmentName</td>
                                             <td>@item.BusinessName</td>
                                             <td><span class="badge bg-light text-dark border">@item.CategoryName</span></td>
+                                            <td class="text-center"><span class="badge bg-secondary">@item.Status</span></td>
                                             <td class="text-center">@item.RentalCount</td>
-                                            <td class="text-end fw-bold">₹@item.Revenue.ToString("N0")</td>
+                                            <td class="text-end fw-bold">@item.Revenue.ToString("C")</td>
                                             <td class="text-center">
                                                 @if (item.AverageRating > 0)
                                                 {
@@ -240,7 +290,7 @@
                                             <td class="fw-bold text-center">#@item.Rank</td>
                                             <td class="fw-bold">@item.BusinessName</td>
                                             <td class="text-center">@item.CompletedRentals</td>
-                                            <td class="text-end fw-bold text-success">₹@item.Revenue.ToString("N0")</td>
+                                            <td class="text-end fw-bold text-success">@item.Revenue.ToString("C")</td>
                                             <td class="text-center">
                                                 @if (item.AverageRating > 0)
                                                 {
@@ -281,7 +331,7 @@
                     data: {
                         labels: periods,
                         datasets: [{
-                            label: 'Revenue (₹)',
+                            label: 'Revenue (?)',
                             data: revenues,
                             borderColor: '#0d6efd',
                             backgroundColor: 'rgba(13, 110, 253, 0.1)',
