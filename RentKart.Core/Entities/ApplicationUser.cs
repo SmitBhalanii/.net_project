@@ -14,5 +14,8 @@ public class ApplicationUser : IdentityUser
     public DateTime? UpdatedAt { get; set; }
     public bool IsActive { get; set; }
     
+    public int? BusinessId { get; set; }
+    public Business? StaffBusiness { get; set; }
+    
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

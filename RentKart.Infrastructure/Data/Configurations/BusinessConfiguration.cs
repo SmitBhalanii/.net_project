@@ -41,5 +41,15 @@ public class BusinessConfiguration : IEntityTypeConfiguration<Business>
             .WithOne(r => r.Business)
             .HasForeignKey(r => r.BusinessId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(b => b.Staff)
+            .WithOne(u => u.StaffBusiness)
+            .HasForeignKey(u => u.BusinessId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(b => b.User)
+            .WithMany()
+            .HasForeignKey(b => b.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -30,4 +30,5 @@ public class Business
     public ICollection<Equipment> Equipment { get; set; } = new List<Equipment>();
     public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public ICollection<ApplicationUser> Staff { get; set; } = new List<ApplicationUser>();
 }

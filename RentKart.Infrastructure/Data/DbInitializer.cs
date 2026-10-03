@@ -18,7 +18,7 @@ public static class DbInitializer
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DbInitializer");
 
-        string[] roleNames = { RoleNames.Admin, RoleNames.Business, RoleNames.Customer };
+        string[] roleNames = { RoleNames.Admin, RoleNames.Business, RoleNames.Customer, RoleNames.VendorStaff };
 
         foreach (var roleName in roleNames)
         {

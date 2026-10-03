@@ -50,7 +50,22 @@
                                 }
                             </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <div class="d-flex gap-2">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    
+                                    @if (item.IsActive)
+                                    {
+                                        <form asp-action="Deactivate" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Are you sure you want to deactivate this equipment?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Deactivate</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Activate" asp-route-id="@item.Id" method="post">
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Activate</button>
+                                        </form>
+                                    }
+                                </div>
                             </td>
                         </tr>
                     }
