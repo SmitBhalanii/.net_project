@@ -25,6 +25,7 @@ builder.Services.AddScoped<RentKart.Core.Interfaces.IAuditLogService, RentKart.I
 builder.Services.AddScoped<RentKart.Core.Interfaces.IPlatformSettingsService, RentKart.Infrastructure.Services.PlatformSettingsService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IUserManagementService, RentKart.Infrastructure.Services.UserManagementService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IReportManagementService, RentKart.Infrastructure.Services.ReportManagementService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IEquipmentSearchService, RentKart.Infrastructure.Services.EquipmentSearchService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

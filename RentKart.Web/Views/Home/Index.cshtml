@@ -14,19 +14,19 @@
         <!-- Search -->
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8">
-                <div class="search-bar bg-white mx-auto">
-                    <input type="text" class="search-input" placeholder="What are you looking for?" />
+                <form asp-controller="Marketplace" asp-action="Search" method="get" class="search-bar bg-white mx-auto">
+                    <input type="text" name="SearchTerm" class="search-input" placeholder="What are you looking for?" />
                     <div class="search-divider d-none d-md-block"></div>
-                    <input type="text" class="search-input d-none d-md-block" placeholder="Location" />
+                    <input type="text" name="Location" class="search-input d-none d-md-block" placeholder="Location" />
                     <div class="search-divider d-none d-md-block"></div>
-                    <input type="text" class="search-input d-none d-md-block" placeholder="Dates" />
-                    <button class="btn btn-primary search-btn"><i class="bi bi-search me-2"></i>Search</button>
-                </div>
+                    <input type="date" name="StartDate" class="search-input d-none d-md-block" placeholder="Dates" />
+                    <button type="submit" class="btn btn-primary search-btn"><i class="bi bi-search me-2"></i>Search</button>
+                </form>
             </div>
         </div>
         
         <div>
-            <a href="#browse" class="btn btn-primary btn-lg px-4 me-3 rounded-pill shadow-sm">Explore Rentals</a>
+            <a asp-controller="Marketplace" asp-action="Search" class="btn btn-primary btn-lg px-4 me-3 rounded-pill shadow-sm">Explore Rentals</a>
             <a asp-controller="Account" asp-action="RegisterBusiness" class="btn btn-outline-primary btn-lg px-4 bg-white rounded-pill shadow-sm">List Your Equipment</a>
         </div>
     </div>
