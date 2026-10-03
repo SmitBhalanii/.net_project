@@ -1,0 +1,52 @@
+@model RentKart.Core.Entities.Rental
+@{
+    ViewData["Title"] = "Rental Details";
+}
+
+<div class="container mt-4">
+    <h2>Rental Details</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">Booking: @Model.Booking.BookingNumber</h5>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <p><strong>Equipment:</strong> @Model.Equipment.Name</p>
+                    <p><strong>Equipment Code:</strong> @Model.Equipment.EquipmentCode</p>
+                    <p><strong>Business:</strong> @Model.Business.BusinessName</p>
+                    <p><strong>Customer:</strong> @Model.Customer.Email</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Status:</strong> <span class="badge bg-primary">@Model.Status</span></p>
+                    <p><strong>Payment Status:</strong> @Model.Booking.PaymentStatus</p>
+                    <p><strong>Rental Start:</strong> @Model.Booking.StartDate.ToString("dd MMM yyyy")</p>
+                    <p><strong>Expected Return:</strong> @Model.ExpectedReturnDate.ToString("dd MMM yyyy")</p>
+                    <p><strong>Actual Return:</strong> @(Model.ActualReturnDate?.ToString("dd MMM yyyy") ?? "Not returned yet")</p>
+                </div>
+            </div>
+
+            <hr />
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Condition at Issue:</strong> @(Model.ConditionAtIssue?.ToString() ?? "N/A")</p>
+                    <p><strong>Issue Notes:</strong> @(Model.IssueNotes ?? "None")</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Condition at Return:</strong> @(Model.ConditionAtReturn?.ToString() ?? "N/A")</p>
+                    <p><strong>Damage Found:</strong> @(Model.DamageFound ? "Yes" : "No")</p>
+                    <p><strong>Return Notes:</strong> @(Model.ReturnNotes ?? "None")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        @if (User.IsInRole("Customer"))
+        {
+            <a asp-action="MyRentals" class="btn btn-secondary">Back to My Rentals</a>
+        }
+        else
+        {
+            <a asp-action="Index" class="btn btn-secondary">Back to Rentals</a>
+        }
+    </div>
+</div>

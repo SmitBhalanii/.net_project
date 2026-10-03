@@ -5,5 +5,7 @@ public enum EquipmentStatus
     Active,
     Inactive,
     UnderMaintenance,
-    Unavailable
+    Unavailable,
+    Rented,
+    Reserved
 }

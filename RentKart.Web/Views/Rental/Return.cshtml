@@ -1,0 +1,75 @@
+@model RentKart.Web.ViewModels.Rental.RentalReturnViewModel
+@{
+    ViewData["Title"] = "Return Equipment";
+}
+
+<div class="container mt-4">
+    <h2>Return Equipment</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">Booking: @Model.BookingNumber</h5>
+            
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <p><strong>Customer:</strong> @Model.CustomerName</p>
+                    <p><strong>Equipment:</strong> @Model.EquipmentName</p>
+                    <p><strong>Code:</strong> @Model.EquipmentCode</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Expected Return:</strong> @Model.ExpectedReturn.ToString("dd MMM yyyy")</p>
+                    <p><strong>Actual Return:</strong> @DateTime.UtcNow.ToString("dd MMM yyyy")</p>
+                </div>
+            </div>
+
+            <hr />
+            <form asp-action="Return" method="post">
+                <input type="hidden" asp-for="RentalId" />
+                
+                <div class="mb-3">
+                    <label class="form-label">Condition at Issue:</label>
+                    <input type="text" class="form-control" value="@Model.ConditionAtIssue" disabled />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConditionAtReturn" class="form-label"></label>
+                    <select asp-for="ConditionAtReturn" asp-items="Html.GetEnumSelectList<RentKart.Core.Enums.EquipmentCondition>()" class="form-select"></select>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DamageFound" class="form-label"></label>
+                    <select asp-for="DamageFound" class="form-select" id="damageFoundSelect">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+
+                <div class="mb-3" id="damageDescriptionGroup" style="display: none;">
+                    <label asp-for="DamageDescription" class="form-label"></label>
+                    <textarea asp-for="DamageDescription" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="DamageDescription" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ReturnNotes" class="form-label"></label>
+                    <textarea asp-for="ReturnNotes" class="form-control" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Complete Return</button>
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('damageFoundSelect').addEventListener('change', function () {
+            var group = document.getElementById('damageDescriptionGroup');
+            if (this.value === 'true') {
+                group.style.display = 'block';
+            } else {
+                group.style.display = 'none';
+            }
+        });
+    </script>
+}

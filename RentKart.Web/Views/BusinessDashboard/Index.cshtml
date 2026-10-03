@@ -14,6 +14,8 @@
             <a asp-controller="Business" asp-action="MyBusiness" class="dashboard-nav-item"><i class="bi bi-shop me-2"></i> My Business</a>
             <a asp-controller="Equipment" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-box me-2"></i> Equipment</a>
             <a asp-controller="BusinessBooking" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-calendar-check me-2"></i> Bookings</a>
+            <a asp-controller="Payment" asp-action="MyPayments" class="dashboard-nav-item"><i class="bi bi-wallet2 me-2"></i> Payments</a>
+            <a asp-controller="Rental" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-bag-check me-2"></i> Rentals</a>
             <a asp-controller="Business" asp-action="Edit" class="dashboard-nav-item"><i class="bi bi-person me-2"></i> Profile</a>
         </div>
     </aside>
@@ -28,22 +30,28 @@
         </div>
 
         <div class="row g-4 mb-4">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="dashboard-stat-card text-center">
-                    <div class="dashboard-stat-title">Active Listings</div>
-                    <div class="dashboard-stat-value">0</div>
+                    <div class="dashboard-stat-title">Ready for Pickup</div>
+                    <div class="dashboard-stat-value">@(ViewBag.ReadyForPickup ?? 0)</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="dashboard-stat-card text-center">
-                    <div class="dashboard-stat-title">Pending Bookings</div>
-                    <div class="dashboard-stat-value">0</div>
+                    <div class="dashboard-stat-title">Active Rentals</div>
+                    <div class="dashboard-stat-value">@(ViewBag.ActiveRentals ?? 0)</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="dashboard-stat-card text-center">
-                    <div class="dashboard-stat-title">Total Revenue</div>
-                    <div class="dashboard-stat-value">₹0</div>
+                    <div class="dashboard-stat-title">Today's Returns</div>
+                    <div class="dashboard-stat-value">@(ViewBag.TodayReturns ?? 0)</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-stat-card text-center text-danger">
+                    <div class="dashboard-stat-title text-danger">Overdue Rentals</div>
+                    <div class="dashboard-stat-value">@(ViewBag.OverdueRentals ?? 0)</div>
                 </div>
             </div>
         </div>

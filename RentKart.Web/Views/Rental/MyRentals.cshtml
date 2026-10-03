@@ -1,0 +1,38 @@
+@model IEnumerable<RentKart.Core.Entities.Rental>
+@{
+    ViewData["Title"] = "My Rentals";
+}
+
+<h2>My Rentals</h2>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Booking</th>
+            <th>Equipment</th>
+            <th>Business</th>
+            <th>Issue Date</th>
+            <th>Expected Return</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rental in Model)
+        {
+            <tr>
+                <td>@rental.Booking.BookingNumber</td>
+                <td>@rental.Equipment.Name</td>
+                <td>@rental.Business.BusinessName</td>
+                <td>@(rental.IssuedAt?.ToString("dd MMM yyyy") ?? "-")</td>
+                <td>@rental.ExpectedReturnDate.ToString("dd MMM yyyy")</td>
+                <td>
+                    <span class="badge bg-primary">@rental.Status</span>
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@rental.Id" class="btn btn-sm btn-outline-info">View Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

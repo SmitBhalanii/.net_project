@@ -13,6 +13,7 @@ public class Equipment
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
 
+    public string EquipmentCode { get; set; } = string.Empty;
     public string Name { get; set; } = null!;
     public string Brand { get; set; } = null!;
     public string Model { get; set; } = null!;

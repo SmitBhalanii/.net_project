@@ -5,5 +5,7 @@ public enum EquipmentCondition
     New,
     Excellent,
     Good,
-    Fair
+    Fair,
+    NeedsAttention,
+    Damaged
 }

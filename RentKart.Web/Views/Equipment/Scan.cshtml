@@ -1,0 +1,49 @@
+@model RentKart.Core.Entities.Equipment
+@{
+    ViewData["Title"] = "Equipment Scan";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <h2 class="mb-4">Equipment Identification</h2>
+            
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title">@Model.Name</h3>
+                    
+                    <ul class="list-group list-group-flush text-start my-3">
+                        <li class="list-group-item"><strong>Equipment Code:</strong> @Model.EquipmentCode</li>
+                        <li class="list-group-item"><strong>Brand:</strong> @Model.Brand</li>
+                        <li class="list-group-item"><strong>Model:</strong> @Model.Model</li>
+                        <li class="list-group-item"><strong>Business:</strong> @Model.Business.BusinessName</li>
+                        <li class="list-group-item">
+                            <strong>Status:</strong> 
+                            <span class="badge bg-@(Model.Status == RentKart.Core.Enums.EquipmentStatus.Active ? "success" : "warning")">
+                                @Model.Status
+                            </span>
+                        </li>
+                    </ul>
+
+                    @if (User.IsInRole("Business") || User.IsInRole("VendorStaff"))
+                    {
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Rental" asp-action="Index" class="btn btn-primary">Go to Rentals</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            This equipment belongs to <strong>@Model.Business.BusinessName</strong>.
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h4>QR Code</h4>
+                <img src="@Url.Action("QrImage", "Equipment", new { code = Model.EquipmentCode })" alt="Equipment QR Code" class="img-fluid border p-2" style="max-width: 200px;" />
+            </div>
+        </div>
+    </div>
+</div>

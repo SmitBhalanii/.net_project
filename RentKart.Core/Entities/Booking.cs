@@ -41,6 +41,7 @@ public class Booking
     public DateTime? UpdatedAt { get; set; }
 
     public RentalAgreement? RentalAgreement { get; set; }
+    public Rental? Rental { get; set; }
     public Invoice? Invoice { get; set; }
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
     public ICollection<DamageReport> DamageReports { get; set; } = new List<DamageReport>();

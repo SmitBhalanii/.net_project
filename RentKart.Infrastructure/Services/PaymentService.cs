@@ -15,12 +15,14 @@ public class PaymentService : IPaymentService
     private readonly ApplicationDbContext _context;
     private readonly IPaymentGateway _paymentGateway;
     private readonly IBookingService _bookingService;
+    private readonly IRentalService _rentalService;
 
-    public PaymentService(ApplicationDbContext context, IPaymentGateway paymentGateway, IBookingService bookingService)
+    public PaymentService(ApplicationDbContext context, IPaymentGateway paymentGateway, IBookingService bookingService, IRentalService rentalService)
     {
         _context = context;
         _paymentGateway = paymentGateway;
         _bookingService = bookingService;
+        _rentalService = rentalService;
     }
 
     public async Task<Payment?> GetPaymentByIdAsync(int id)
@@ -127,6 +129,9 @@ public class PaymentService : IPaymentService
             
             // Note: If you want Booking to also become "Confirmed", you can do it here. 
             // The spec mentions preferred state: BookingStatus: Approved, PaymentStatus: Succeeded. So we'll just set PaymentStatus.
+            
+            // Phase 9: Prepare rental for pickup
+            await _rentalService.PrepareForPickupAsync(booking.Id);
         }
 
         payment.UpdatedAt = DateTime.UtcNow;

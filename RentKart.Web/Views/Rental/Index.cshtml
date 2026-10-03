@@ -1,0 +1,51 @@
+@model IEnumerable<RentKart.Core.Entities.Rental>
+@{
+    ViewData["Title"] = "Business Rentals";
+}
+
+<h2>Rental Management</h2>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Booking</th>
+            <th>Customer</th>
+            <th>Equipment</th>
+            <th>Code</th>
+            <th>Expected Return</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rental in Model)
+        {
+            <tr>
+                <td>@rental.Booking.BookingNumber</td>
+                <td>@rental.Customer.Email</td>
+                <td>@rental.Equipment.Name</td>
+                <td>@rental.Equipment.EquipmentCode</td>
+                <td>@rental.ExpectedReturnDate.ToString("dd MMM yyyy")</td>
+                <td>
+                    <span class="badge bg-secondary">@rental.Status</span>
+                    @if (rental.Status == RentKart.Core.Enums.RentalStatus.Active && DateTime.UtcNow.Date > rental.ExpectedReturnDate.Date)
+                    {
+                        <span class="badge bg-danger">Overdue</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@rental.Id" class="btn btn-sm btn-outline-info">View</a>
+                    
+                    @if (rental.Status == RentKart.Core.Enums.RentalStatus.ReadyForPickup)
+                    {
+                        <a asp-action="Issue" asp-route-id="@rental.Id" class="btn btn-sm btn-success">Issue</a>
+                    }
+                    @if (rental.Status == RentKart.Core.Enums.RentalStatus.Active)
+                    {
+                        <a asp-action="Return" asp-route-id="@rental.Id" class="btn btn-sm btn-primary">Return</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

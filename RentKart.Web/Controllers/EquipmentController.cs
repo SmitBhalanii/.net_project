@@ -74,6 +74,7 @@ public class EquipmentController : Controller
         {
             var equipment = new Equipment
             {
+                EquipmentCode = $"EQP-{DateTime.UtcNow.Year}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
                 BusinessId = businessId.Value,
                 CategoryId = viewModel.CategoryId,
                 Name = viewModel.Name,
@@ -117,5 +118,21 @@ public class EquipmentController : Controller
         var categories = await _categoryService.GetActiveCategoriesAsync();
         ViewBag.Categories = new SelectList(categories, "Id", "Name");
         return View(viewModel);
+    }
+
+    [AllowAnonymous]
+    public IActionResult QrImage(string code, [FromServices] IQrCodeService qrCodeService)
+    {
+        var qrBytes = qrCodeService.GenerateQrCode($"/Equipment/Scan/{code}");
+        return File(qrBytes, "image/png");
+    }
+
+    [AllowAnonymous]
+    [Route("Equipment/Scan/{code}")]
+    public async Task<IActionResult> Scan(string code, [FromServices] IRentalService rentalService)
+    {
+        var equipment = await rentalService.GetEquipmentByCodeAsync(code);
+        if (equipment == null) return NotFound("Equipment not found.");
+        return View(equipment);
     }
 }
