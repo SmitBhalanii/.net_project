@@ -13,11 +13,13 @@ public class RentalController : Controller
 {
     private readonly IRentalService _rentalService;
     private readonly IBusinessService _businessService;
+    private readonly IQrCodeService _qrCodeService;
 
-    public RentalController(IRentalService rentalService, IBusinessService businessService)
+    public RentalController(IRentalService rentalService, IBusinessService businessService, IQrCodeService qrCodeService)
     {
         _rentalService = rentalService;
         _businessService = businessService;
+        _qrCodeService = qrCodeService;
     }
 
     [Authorize(Roles = "Customer")]
@@ -58,6 +60,35 @@ public class RentalController : Controller
         }
 
         return View(rental);
+    }
+
+    [Authorize(Roles = "Customer")]
+    public IActionResult PickupQr(int id)
+    {
+        var url = Url.Action("Issue", "Rental", new { id }, Request.Scheme);
+        if (url == null) return NotFound();
+        var qrBytes = _qrCodeService.GenerateQrCode(url);
+        return File(qrBytes, "image/png");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Business,VendorStaff")]
+    public async Task<IActionResult> SearchByBooking(string bookingNumber)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var business = await _businessService.GetBusinessByUserIdAsync(userId!);
+        if (business == null) return Forbid();
+
+        var rental = await _rentalService.GetRentalByBookingNumberAsync(bookingNumber);
+        
+        if (rental == null || rental.BusinessId != business.Id)
+        {
+            TempData["ErrorMessage"] = "Rental not found or does not belong to your business.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        return RedirectToAction(nameof(Details), new { id = rental.Id });
     }
 
     [Authorize(Roles = "Business,VendorStaff")]
@@ -173,6 +204,34 @@ public class RentalController : Controller
         {
             ModelState.AddModelError("", ex.Message);
             return View(model);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Business,VendorStaff")]
+    public async Task<IActionResult> Complete(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return Unauthorized();
+
+        try
+        {
+            var rental = await _rentalService.GetRentalByIdAsync(id);
+            if (rental == null) return NotFound();
+            
+            var business = await _businessService.GetBusinessByUserIdAsync(userId);
+            if (business == null || rental.BusinessId != business.Id) return Forbid();
+
+            await _rentalService.CompleteRentalAsync(rental.Id, userId);
+            
+            TempData["SuccessMessage"] = "Rental marked as completed.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        catch (System.Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+            return RedirectToAction(nameof(Details), new { id });
         }
     }
 }

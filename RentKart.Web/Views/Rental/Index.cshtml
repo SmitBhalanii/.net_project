@@ -3,7 +3,23 @@
     ViewData["Title"] = "Business Rentals";
 }
 
-<h2>Rental Management</h2>
+<div class="d-flex justify-content-between align-items-center mt-3 mb-4">
+    <h2>Rental Management</h2>
+    
+    <form asp-action="SearchByBooking" method="post" class="d-flex w-50">
+        <input type="text" name="bookingNumber" class="form-control me-2" placeholder="Scan or Enter Booking Number (e.g. BKG-...)" required />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
 
 <table class="table table-striped mt-3">
     <thead>
@@ -42,7 +58,14 @@
                     }
                     @if (rental.Status == RentKart.Core.Enums.RentalStatus.Active)
                     {
-                        <a asp-action="Return" asp-route-id="@rental.Id" class="btn btn-sm btn-primary">Return</a>
+                        <a asp-action="Return" asp-route-id="@rental.Id" class="btn btn-sm btn-primary">Receive</a>
+                    }
+                    @if (rental.Status == RentKart.Core.Enums.RentalStatus.Returned)
+                    {
+                        <form asp-action="Complete" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@rental.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Complete this rental?');">Complete</button>
+                        </form>
                     }
                 </td>
             </tr>

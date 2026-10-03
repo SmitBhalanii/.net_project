@@ -41,6 +41,16 @@ public class RentalService : IRentalService
             .FirstOrDefaultAsync(r => r.BookingId == bookingId);
     }
 
+    public async Task<Rental?> GetRentalByBookingNumberAsync(string bookingNumber)
+    {
+        return await _context.Rentals
+            .Include(r => r.Booking)
+            .Include(r => r.Equipment)
+            .Include(r => r.Customer)
+            .Include(r => r.Business)
+            .FirstOrDefaultAsync(r => r.Booking.BookingNumber == bookingNumber);
+    }
+
     public async Task<IEnumerable<Rental>> GetBusinessRentalsAsync(int businessId)
     {
         return await _context.Rentals
@@ -172,7 +182,7 @@ public class RentalService : IRentalService
         if (rental.Status != RentalStatus.Active)
             throw new Exception("Rental is not active");
 
-        rental.Status = RentalStatus.Returned;
+        rental.Status = damageFound ? RentalStatus.Returned : RentalStatus.Completed;
         rental.ActualReturnDate = DateTime.UtcNow;
         rental.ReturnedToStaffId = staffId;
         rental.ConditionAtReturn = condition;
@@ -180,21 +190,31 @@ public class RentalService : IRentalService
         rental.DamageDescription = damageDescription;
         rental.ReturnNotes = notes;
         rental.UpdatedAt = DateTime.UtcNow;
-
-        // In this MVP, Completed marks the end of the rental lifecycle
-        rental.Status = RentalStatus.Completed; 
         
-        rental.Booking.Status = BookingStatus.Completed;
-        rental.Booking.UpdatedAt = DateTime.UtcNow;
-
-        if (damageFound)
+        if (!damageFound)
         {
-            rental.Equipment.Status = EquipmentStatus.UnderMaintenance;
+            rental.Booking.Status = BookingStatus.Completed;
+            rental.Booking.UpdatedAt = DateTime.UtcNow;
+            rental.Equipment.Status = EquipmentStatus.Active; // Available
         }
         else
         {
-            rental.Equipment.Status = EquipmentStatus.Active; // Active mapping to Available
+            // Create Damage Report
+            var damageReport = new DamageReport
+            {
+                BookingId = rental.BookingId,
+                EquipmentId = rental.EquipmentId,
+                ReportedByUserId = staffId,
+                Description = damageDescription ?? "Damage found on return.",
+                Status = DamageStatus.Reported,
+                Notes = notes,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Set<DamageReport>().Add(damageReport);
+            
+            rental.Equipment.Status = EquipmentStatus.UnderMaintenance;
         }
+
         rental.Equipment.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
@@ -210,14 +230,48 @@ public class RentalService : IRentalService
                 "Rental",
                 rental.Id.ToString());
                 
-            await _notificationService.CreateNotificationAsync(
-                rental.CustomerId,
-                NotificationType.RentalCompleted,
-                "Rental Completed",
-                $"Your rental of {equipment.Name} has been completed. You can now leave a review.",
-                "Rental",
-                rental.Id.ToString());
+            if (!damageFound)
+            {
+                await _notificationService.CreateNotificationAsync(
+                    rental.CustomerId,
+                    NotificationType.RentalCompleted,
+                    "Rental Completed",
+                    $"Your rental of {equipment.Name} has been completed. You can now leave a review.",
+                    "Rental",
+                    rental.Id.ToString());
+            }
+            else
+            {
+                await _notificationService.CreateNotificationAsync(
+                    rental.CustomerId,
+                    NotificationType.System,
+                    "Damage Reported",
+                    $"Damage was reported during the return of {equipment.Name}. We will review it shortly.",
+                    "Rental",
+                    rental.Id.ToString());
+            }
         }
+
+        return rental;
+    }
+
+    public async Task<Rental> CompleteRentalAsync(int rentalId, string staffId)
+    {
+        var rental = await GetRentalByIdAsync(rentalId);
+        if (rental == null) throw new Exception("Rental not found");
+
+        if (rental.Status != RentalStatus.Returned)
+            throw new Exception("Only returned rentals can be marked as completed.");
+
+        rental.Status = RentalStatus.Completed;
+        rental.UpdatedAt = DateTime.UtcNow;
+
+        rental.Booking.Status = BookingStatus.Completed;
+        rental.Booking.UpdatedAt = DateTime.UtcNow;
+
+        // Note: Equipment Status is NOT changed here. If it was UnderMaintenance due to damage, it stays that way until maintenance completes.
+        
+        await _context.SaveChangesAsync();
 
         return rental;
     }
