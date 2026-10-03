@@ -1,0 +1,119 @@
+@{
+    ViewData["Title"] = "My Financials";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2><i class="bi bi-wallet2"></i> My Financials</h2>
+            <p class="text-muted">Track your payments, invoices, and refunds across all bookings.</p>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs" id="financialTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="payments-tab" data-bs-toggle="tab" data-bs-target="#payments" type="button" role="tab">Payments</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="invoices-tab" data-bs-toggle="tab" data-bs-target="#invoices" type="button" role="tab">Invoices</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="refunds-tab" data-bs-toggle="tab" data-bs-target="#refunds" type="button" role="tab">Refunds</button>
+        </li>
+    </ul>
+    
+    <div class="tab-content p-4 border border-top-0 rounded-bottom bg-white">
+        <div class="tab-pane fade show active" id="payments" role="tabpanel">
+            <h4>Recent Payments</h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ref</th>
+                            <th>Booking</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var payment in ViewBag.Payments)
+                        {
+                            <tr>
+                                <td>@payment.PaymentReference</td>
+                                <td><a href="/Booking/Details/@payment.BookingId">@payment.Booking.BookingNumber</a></td>
+                                <td>@payment.Amount.ToString("C")</td>
+                                <td>@payment.PaymentMethod</td>
+                                <td><span class="badge bg-@(payment.PaymentStatus == RentKart.Core.Enums.PaymentStatus.Succeeded ? "success" : "secondary")">@payment.PaymentStatus</span></td>
+                                <td>@payment.CreatedAt.ToString("g")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="invoices" role="tabpanel">
+            <h4>Invoices</h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Booking</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Issued At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var invoice in ViewBag.Invoices)
+                        {
+                            <tr>
+                                <td>@invoice.InvoiceNumber</td>
+                                <td><a href="/Booking/Details/@invoice.BookingId">@invoice.Booking.BookingNumber</a></td>
+                                <td>@invoice.TotalAmount.ToString("C")</td>
+                                <td><span class="badge bg-@(invoice.Status == "Paid" ? "success" : "warning")">@invoice.Status</span></td>
+                                <td>@invoice.IssuedAt.ToString("d")</td>
+                                <td><a href="/Invoice/Details/@invoice.Id" class="btn btn-sm btn-outline-primary">View</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="tab-pane fade" id="refunds" role="tabpanel">
+            <h4>Refunds</h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ref</th>
+                            <th>Booking</th>
+                            <th>Amount</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var refund in ViewBag.Refunds)
+                        {
+                            <tr>
+                                <td>@refund.RefundReference</td>
+                                <td><a href="/Booking/Details/@refund.BookingId">@refund.Booking.BookingNumber</a></td>
+                                <td>@refund.Amount.ToString("C")</td>
+                                <td>@refund.Reason</td>
+                                <td><span class="badge bg-success">@refund.Status</span></td>
+                                <td>@refund.CreatedAt.ToString("g")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

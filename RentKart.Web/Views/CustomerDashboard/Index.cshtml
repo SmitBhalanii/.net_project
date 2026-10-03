@@ -15,6 +15,7 @@
             <a asp-controller="Rental" asp-action="MyRentals" class="dashboard-nav-item"><i class="bi bi-bag-check me-2"></i> My Rentals</a>
             <a asp-controller="Wishlist" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-heart me-2"></i> Wishlist</a>
             <a asp-controller="Review" asp-action="MyReviews" class="dashboard-nav-item"><i class="bi bi-star me-2"></i> My Reviews</a>
+            <a asp-controller="CustomerFinancial" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-wallet2 me-2"></i> Financials</a>
             <a asp-controller="Notification" asp-action="Index" class="dashboard-nav-item">
                 <i class="bi bi-bell me-2"></i> Notifications
                 @if (ViewBag.UnreadNotificationCount != null && ViewBag.UnreadNotificationCount > 0)

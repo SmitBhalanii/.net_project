@@ -138,6 +138,22 @@ public class PaymentService : IPaymentService
 
         payment.UpdatedAt = DateTime.UtcNow;
         booking.UpdatedAt = DateTime.UtcNow;
+
+        if (result.IsSuccess)
+        {
+            var invoice = new Invoice
+            {
+                BookingId = booking.Id,
+                InvoiceNumber = $"INV-{DateTime.UtcNow.Year}-{Guid.NewGuid().ToString().Substring(0,6).ToUpper()}",
+                IssuedAt = DateTime.UtcNow,
+                Subtotal = booking.RentalAmount,
+                SecurityDeposit = booking.SecurityDepositAmount,
+                TaxAmount = 0, // Simplified tax
+                TotalAmount = booking.TotalAmount,
+                Status = "Paid"
+            };
+            _context.Invoices.Add(invoice);
+        }
         
         // 11. Save changes
         await _context.SaveChangesAsync();

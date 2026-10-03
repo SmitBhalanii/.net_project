@@ -26,6 +26,7 @@ builder.Services.AddScoped<RentKart.Core.Interfaces.IPlatformSettingsService, Re
 builder.Services.AddScoped<RentKart.Core.Interfaces.IUserManagementService, RentKart.Infrastructure.Services.UserManagementService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IReportManagementService, RentKart.Infrastructure.Services.ReportManagementService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IEquipmentSearchService, RentKart.Infrastructure.Services.EquipmentSearchService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IRefundService, RentKart.Infrastructure.Services.RefundService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

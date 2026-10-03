@@ -1,0 +1,78 @@
+@{
+    ViewData["Title"] = "Platform Financials";
+
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-bank"></i> Platform Financials</h2>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h6 class="card-title">Total Processed Payments</h6>
+                    <h4 class="mb-0">@ViewBag.TotalPayments.ToString("C")</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h6 class="card-title">Total Rental Revenue</h6>
+                    <h4 class="mb-0">@ViewBag.TotalRentalRevenue.ToString("C")</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-dark bg-warning">
+                <div class="card-body">
+                    <h6 class="card-title">Deposits Held (Completed Bookings)</h6>
+                    <h4 class="mb-0">@ViewBag.TotalDepositsHeld.ToString("C")</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h6 class="card-title">Total Refunds Processed</h6>
+                    <h4 class="mb-0">@ViewBag.TotalRefunds.ToString("C")</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Recent Platform Transactions (Payments)</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Transaction Ref</th>
+                        <th>Booking</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var payment in ViewBag.RecentTransactions)
+                    {
+                        <tr>
+                            <td>@payment.PaymentReference</td>
+                            <td><a href="/AdminDashboard/BookingDetails/@payment.BookingId">@payment.Booking.BookingNumber</a></td>
+                            <td>@payment.Amount.ToString("C")</td>
+                            <td>@payment.PaymentMethod</td>
+                            <td><span class="badge bg-@(payment.PaymentStatus == RentKart.Core.Enums.PaymentStatus.Succeeded ? "success" : "secondary")">@payment.PaymentStatus</span></td>
+                            <td>@payment.CreatedAt.ToString("g")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

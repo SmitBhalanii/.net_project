@@ -25,6 +25,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<Refund> Refunds => Set<Refund>();
     public DbSet<Rental> Rentals => Set<Rental>();
     public DbSet<Report> Reports => Set<Report>();
     public DbSet<PlatformSetting> PlatformSettings => Set<PlatformSetting>();

@@ -1,0 +1,96 @@
+@{
+    ViewData["Title"] = "Business Financials";
+
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-graph-up-arrow"></i> Financial Overview</h2>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Total Revenue (Completed)</h5>
+                    <h3 class="mb-0">@ViewBag.TotalRevenue.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Payments Received</h5>
+                    <h3 class="mb-0">@ViewBag.TotalPayments.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Total Refunds Issued</h5>
+                    <h3 class="mb-0">@ViewBag.TotalRefunds.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Payments Received</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Booking</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var payment in ViewBag.Payments)
+                            {
+                                <tr>
+                                    <td><a href="/BusinessBooking/Details/@payment.BookingId">@payment.Booking.BookingNumber</a></td>
+                                    <td>@payment.Amount.ToString("C")</td>
+                                    <td>@payment.CreatedAt.ToString("d")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Refunds Issued</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Booking</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var refund in ViewBag.Refunds)
+                            {
+                                <tr>
+                                    <td><a href="/BusinessBooking/Details/@refund.BookingId">@refund.Booking.BookingNumber</a></td>
+                                    <td>@refund.Amount.ToString("C")</td>
+                                    <td>@refund.CreatedAt.ToString("d")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

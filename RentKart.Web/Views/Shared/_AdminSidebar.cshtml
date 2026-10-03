@@ -13,6 +13,9 @@
         <a asp-controller="AdminEquipment" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminEquipment" ? "active" : "")">
             <i class="bi bi-box-seam me-2"></i> Equipment
         </a>
+        <a asp-controller="AdminFinancial" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminFinancial" ? "active" : "")">
+            <i class="bi bi-bank me-2"></i> Financials
+        </a>
         <a asp-controller="AdminCategory" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminCategory" ? "active" : "")">
             <i class="bi bi-tags me-2"></i> Categories
         </a>

@@ -1,0 +1,101 @@
+@model RentKart.Core.Entities.Invoice
+@{
+    ViewData["Title"] = "Invoice " + Model.InvoiceNumber;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Invoice: @Model.InvoiceNumber</h2>
+        <button class="btn btn-outline-primary" onclick="window.print()">
+            <i class="bi bi-printer"></i> Print / Save PDF
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-5">
+            <div class="row mb-5">
+                <div class="col-md-6">
+                    <h3 class="text-primary mb-3">RentKart</h3>
+                    <p class="text-muted">
+                        Your trusted equipment rental marketplace.<br>
+                        Contact: support@rentkart.com
+                    </p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h5 class="mb-1">Invoice Details</h5>
+                    <p class="mb-1"><strong>Date Issued:</strong> @Model.IssuedAt.ToString("MMM dd, yyyy")</p>
+                    <p class="mb-1"><strong>Status:</strong> <span class="badge bg-@(Model.Status == "Paid" ? "success" : "warning")">@Model.Status</span></p>
+                    <p><strong>Booking Ref:</strong> <a href="/Booking/Details/@Model.BookingId">@Model.Booking.BookingNumber</a></p>
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-md-6">
+                    <h6 class="text-uppercase text-muted">Billed To:</h6>
+                    <h5>@Model.Booking.Customer.FirstName @Model.Booking.Customer.LastName</h5>
+                    <p class="text-muted mb-0">@Model.Booking.Customer.Email</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h6 class="text-uppercase text-muted">Provider:</h6>
+                    <h5>@Model.Booking.Business.BusinessName</h5>
+                    <p class="text-muted mb-0">@Model.Booking.Business.Email</p>
+                </div>
+            </div>
+
+            <div class="table-responsive mb-4">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Item Description</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-center">Duration</th>
+                            <th class="text-end">Rate</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>@Model.Booking.Equipment.Name</strong><br>
+                                <small class="text-muted">Rental Period: @Model.Booking.StartDate.ToString("MMM dd") to @Model.Booking.EndDate.ToString("MMM dd")</small>
+                            </td>
+                            <td class="text-center">@Model.Booking.Quantity</td>
+                            <td class="text-center">@((Model.Booking.EndDate - Model.Booking.StartDate).Days + 1) days</td>
+                            <td class="text-end">@Model.Booking.DailyRate.ToString("C") / day</td>
+                            <td class="text-end">@Model.Subtotal.ToString("C")</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="text-muted small">
+                        <strong>Note:</strong> Security deposits are refundable subject to equipment inspection upon return. Security deposits are excluded from rental tax calculations.
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-borderless table-sm text-end">
+                        <tr>
+                            <td>Subtotal:</td>
+                            <td>@Model.Subtotal.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <td>Tax:</td>
+                            <td>@Model.TaxAmount.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <td>Security Deposit:</td>
+                            <td>@Model.SecurityDeposit.ToString("C")</td>
+                        </tr>
+                        <tr class="border-top">
+                            <th>Total Billed Amount:</th>
+                            <th><h4>@Model.TotalAmount.ToString("C")</h4></th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

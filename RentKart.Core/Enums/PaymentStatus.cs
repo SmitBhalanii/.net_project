@@ -7,5 +7,6 @@ public enum PaymentStatus
     Succeeded,
     Failed,
     Cancelled,
-    Refunded
+    Refunded,
+    PartiallyRefunded
 }
