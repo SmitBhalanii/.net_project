@@ -1,0 +1,92 @@
+@model IEnumerable<RentKart.Core.Entities.Category>
+@{
+    ViewData["Title"] = "Manage Categories";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<div class="dashboard-container mx-n3 mt-n3 mb-n3">
+    <partial name="_AdminSidebar" />
+    
+    <main class="dashboard-main">
+        <div class="dashboard-header d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="dashboard-title">Manage Categories</h2>
+                <p class="text-muted mb-0">Create and organize platform equipment categories.</p>
+            </div>
+            <div>
+                <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i> New Category</a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Icon</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="bg-light text-primary rounded d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px; overflow: hidden;">
+                                            @if (!string.IsNullOrEmpty(item.ImagePath))
+                                            {
+                                                <img src="@item.ImagePath" alt="@item.Name" class="w-100 h-100 object-fit-cover" />
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-tag"></i>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="fw-bold">@item.Name</td>
+                                    <td class="text-muted">@item.Description</td>
+                                    <td>
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge bg-success rounded-pill">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary rounded-pill">Inactive</span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil-square"></i> Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <p class="text-muted mb-0">No categories found.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

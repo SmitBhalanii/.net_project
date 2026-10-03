@@ -9,6 +9,9 @@ namespace RentKart.Core.DTOs.Reports
         public int TotalUsers { get; set; }
         public int TotalCustomers { get; set; }
         public int TotalBusinesses { get; set; }
+        public int PendingVendors { get; set; }
+        public int ApprovedVendors { get; set; }
+        public int SuspendedVendors { get; set; }
         public int TotalEquipment { get; set; }
         public int TotalBookings { get; set; }
         public int ActiveRentals { get; set; }

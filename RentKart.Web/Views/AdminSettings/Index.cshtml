@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "Platform Settings";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<div class="dashboard-container mx-n3 mt-n3 mb-n3">
+    <partial name="_AdminSidebar" />
+    
+    <main class="dashboard-main">
+        <div class="dashboard-header">
+            <div>
+                <h2 class="dashboard-title">Platform Settings</h2>
+                <p class="text-muted mb-0">Configure global platform behavior.</p>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold border-bottom pb-2 mb-3">General Settings</h5>
+                        
+                        <form asp-action="Update" method="post" class="mb-4">
+                            <input type="hidden" name="key" value="PlatformName" />
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Platform Name</label>
+                                <div class="input-group">
+                                    <input type="text" name="value" class="form-control" value="@ViewBag.PlatformName" />
+                                    <button type="submit" class="btn btn-outline-primary">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <form asp-action="Update" method="post" class="mb-4">
+                            <input type="hidden" name="key" value="SupportEmail" />
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Support Email</label>
+                                <div class="input-group">
+                                    <input type="email" name="value" class="form-control" value="@ViewBag.SupportEmail" />
+                                    <button type="submit" class="btn btn-outline-primary">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold border-bottom pb-2 mb-3">Platform Status</h5>
+                        
+                        <form asp-action="Update" method="post">
+                            <input type="hidden" name="key" value="MarketplaceActive" />
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Marketplace Active</label>
+                                <div class="form-text mb-2">If disabled, customers will not be able to browse or book new rentals.</div>
+                                <div class="input-group">
+                                    <select name="value" class="form-select">
+                                        <option value="True" selected="@(ViewBag.MarketplaceActive == "True")">Active</option>
+                                        <option value="False" selected="@(ViewBag.MarketplaceActive == "False")">Maintenance Mode</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-outline-primary">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

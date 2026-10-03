@@ -1,3 +1,4 @@
+@model RentKart.Core.DTOs.Reports.AdminDashboardDto
 @{
     ViewData["Title"] = "Admin Dashboard";
 }
@@ -7,24 +8,7 @@
 }
 
 <div class="dashboard-container mx-n3 mt-n3 mb-n3">
-    <aside class="dashboard-sidebar d-none d-md-block">
-        <div class="p-3">
-            <h6 class="text-muted fw-bold mb-3 px-2">ADMINISTRATION</h6>
-            <a asp-controller="AdminDashboard" asp-action="Index" class="dashboard-nav-item active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a asp-controller="AdminBusiness" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-shop me-2"></i> Businesses</a>
-            <a href="#" class="dashboard-nav-item"><i class="bi bi-people me-2"></i> Customers</a>
-            <a asp-controller="Category" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-tags me-2"></i> Categories</a>
-            <a asp-controller="Review" asp-action="Pending" class="dashboard-nav-item"><i class="bi bi-star-half me-2"></i> Reviews</a>
-            <a asp-controller="Notification" asp-action="Index" class="dashboard-nav-item">
-                <i class="bi bi-bell me-2"></i> Notifications
-                @if (ViewBag.UnreadNotificationCount != null && ViewBag.UnreadNotificationCount > 0)
-                {
-                    <span class="badge bg-danger ms-1">@ViewBag.UnreadNotificationCount</span>
-                }
-            </a>
-            <a asp-controller="Reports" asp-action="Admin" class="dashboard-nav-item"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports & Analytics</a>
-        </div>
-    </aside>
+    <partial name="_AdminSidebar" />
     
     <main class="dashboard-main">
         <div class="dashboard-header">
@@ -37,26 +21,32 @@
         <div class="row g-4 mb-4">
             <div class="col-md-3">
                 <div class="dashboard-stat-card text-center">
-                    <div class="dashboard-stat-title">Total Businesses</div>
-                    <div class="dashboard-stat-value">0</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="dashboard-stat-card text-center">
-                    <div class="dashboard-stat-title">Total Customers</div>
-                    <div class="dashboard-stat-value">0</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="dashboard-stat-card text-center">
-                    <div class="dashboard-stat-title">Active Listings</div>
-                    <div class="dashboard-stat-value">0</div>
+                    <div class="dashboard-stat-title">Total Revenue</div>
+                    <div class="dashboard-stat-value">@Model.TotalRevenue.ToString("C")</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="dashboard-stat-card text-center">
                     <div class="dashboard-stat-title">Total Bookings</div>
-                    <div class="dashboard-stat-value">0</div>
+                    <div class="dashboard-stat-value">@Model.TotalBookings</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="dashboard-stat-card text-center">
+                    <div class="dashboard-stat-title">Pending Businesses</div>
+                    <div class="dashboard-stat-value">@Model.PendingVendors</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="dashboard-stat-card text-center">
+                    <div class="dashboard-stat-title">Approved Businesses</div>
+                    <div class="dashboard-stat-value">@Model.ApprovedVendors</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="dashboard-stat-card text-center">
+                    <div class="dashboard-stat-title">Suspended Businesses</div>
+                    <div class="dashboard-stat-value">@Model.SuspendedVendors</div>
                 </div>
             </div>
         </div>

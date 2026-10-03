@@ -14,4 +14,5 @@ public interface IEquipmentService
     Task<bool> DeactivateEquipmentAsync(int id, int businessId);
     Task<bool> ActivateEquipmentAsync(int id, int businessId);
     Task<IEnumerable<Equipment>> GetFeaturedEquipmentAsync(int count);
+    Task<IEnumerable<Equipment>> GetRecentEquipmentAsync(int count);
 }

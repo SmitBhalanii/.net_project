@@ -1,0 +1,39 @@
+<aside class="dashboard-sidebar d-none d-md-block">
+    <div class="p-3">
+        <h6 class="text-muted fw-bold mb-3 px-2">ADMINISTRATION</h6>
+        <a asp-controller="AdminDashboard" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminDashboard" ? "active" : "")">
+            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+        </a>
+        <a asp-controller="AdminUser" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminUser" ? "active" : "")">
+            <i class="bi bi-people me-2"></i> Users
+        </a>
+        <a asp-controller="AdminBusiness" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminBusiness" ? "active" : "")">
+            <i class="bi bi-shop me-2"></i> Businesses
+        </a>
+        <a asp-controller="AdminEquipment" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminEquipment" ? "active" : "")">
+            <i class="bi bi-box-seam me-2"></i> Equipment
+        </a>
+        <a asp-controller="AdminCategory" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminCategory" ? "active" : "")">
+            <i class="bi bi-tags me-2"></i> Categories
+        </a>
+        <a asp-controller="AdminReport" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminReport" ? "active" : "")">
+            <i class="bi bi-shield-exclamation me-2"></i> Reports/Disputes
+        </a>
+        <a asp-controller="AdminReview" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminReview" ? "active" : "")">
+            <i class="bi bi-star-half me-2"></i> Reviews
+        </a>
+        <a asp-controller="AdminAudit" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminAudit" ? "active" : "")">
+            <i class="bi bi-journal-text me-2"></i> Audit Logs
+        </a>
+        <a asp-controller="AdminSettings" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminSettings" ? "active" : "")">
+            <i class="bi bi-gear me-2"></i> Settings
+        </a>
+        <a asp-controller="Notification" asp-action="Index" class="dashboard-nav-item @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Notification" ? "active" : "")">
+            <i class="bi bi-bell me-2"></i> Notifications
+            @if (ViewBag.UnreadNotificationCount != null && ViewBag.UnreadNotificationCount > 0)
+            {
+                <span class="badge bg-danger ms-1">@ViewBag.UnreadNotificationCount</span>
+            }
+        </a>
+    </div>
+</aside>

@@ -151,4 +151,14 @@ public class EquipmentService : IEquipmentService
             .Take(count)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<Equipment>> GetRecentEquipmentAsync(int count)
+    {
+        return await _context.Equipment
+            .Include(e => e.Business)
+            .Include(e => e.Category)
+            .OrderByDescending(e => e.CreatedAt)
+            .Take(count)
+            .ToListAsync();
+    }
 }

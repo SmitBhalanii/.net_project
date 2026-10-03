@@ -12,10 +12,12 @@ namespace RentKart.Web.Controllers;
 public class AdminDashboardController : Controller
 {
     private readonly INotificationService _notificationService;
+    private readonly IReportingService _reportingService;
 
-    public AdminDashboardController(INotificationService notificationService)
+    public AdminDashboardController(INotificationService notificationService, IReportingService reportingService)
     {
         _notificationService = notificationService;
+        _reportingService = reportingService;
     }
 
     public async Task<IActionResult> Index()
@@ -40,6 +42,7 @@ public class AdminDashboardController : Controller
             ViewBag.UnreadNotificationCount = unreadCount;
         }
 
-        return View();
+        var report = await _reportingService.GetAdminDashboardAsync();
+        return View(report);
     }
 }

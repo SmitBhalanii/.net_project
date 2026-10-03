@@ -29,6 +29,9 @@ namespace RentKart.Infrastructure.Services
             // Let's count by Bookings/Businesses logic or just total users
             var totalUsers = await _db.Users.CountAsync();
             var totalBusinesses = await _db.Businesses.CountAsync();
+            var pendingVendors = await _db.Businesses.CountAsync(b => b.ApprovalStatus == BusinessApprovalStatus.Pending);
+            var approvedVendors = await _db.Businesses.CountAsync(b => b.ApprovalStatus == BusinessApprovalStatus.Approved);
+            var suspendedVendors = await _db.Businesses.CountAsync(b => b.ApprovalStatus == BusinessApprovalStatus.Suspended);
             var totalCustomers = totalUsers - totalBusinesses; // Rough estimate since admin is included, but we can do a better query if needed
             
             var totalEquipment = await _db.Equipment.CountAsync();
@@ -151,6 +154,9 @@ namespace RentKart.Infrastructure.Services
                 TotalUsers = totalUsers,
                 TotalCustomers = totalCustomers,
                 TotalBusinesses = totalBusinesses,
+                PendingVendors = pendingVendors,
+                ApprovedVendors = approvedVendors,
+                SuspendedVendors = suspendedVendors,
                 TotalEquipment = totalEquipment,
                 TotalBookings = totalBookings,
                 ActiveRentals = activeRentals,

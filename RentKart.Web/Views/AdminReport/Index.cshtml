@@ -1,0 +1,90 @@
+@model IEnumerable<RentKart.Core.Entities.Report>
+@using RentKart.Core.Enums
+@{
+    ViewData["Title"] = "Reports & Disputes";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<div class="dashboard-container mx-n3 mt-n3 mb-n3">
+    <partial name="_AdminSidebar" />
+    
+    <main class="dashboard-main">
+        <div class="dashboard-header">
+            <div>
+                <h2 class="dashboard-title">Reports & Disputes</h2>
+                <p class="text-muted mb-0">Manage user reports and platform disputes.</p>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Target Type</th>
+                                <th>Reason</th>
+                                <th>Reported By</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var report in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">@report.TargetType</span>
+                                    </td>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 200px;" title="@report.Reason">
+                                            @report.Reason
+                                        </div>
+                                    </td>
+                                    <td>@report.Reporter?.Email</td>
+                                    <td>
+                                        @{
+                                            var badgeClass = report.Status switch
+                                            {
+                                                ReportStatus.Open => "bg-warning text-dark",
+                                                ReportStatus.UnderReview => "bg-info text-dark",
+                                                ReportStatus.Resolved => "bg-success",
+                                                ReportStatus.Rejected => "bg-secondary",
+                                                _ => "bg-secondary"
+                                            };
+                                        }
+                                        <span class="badge @badgeClass rounded-pill">@report.Status</span>
+                                    </td>
+                                    <td>@report.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                    <td class="text-end pe-4">
+                                        <a asp-action="Details" asp-route-id="@report.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <p class="text-muted mb-0">No reports found.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

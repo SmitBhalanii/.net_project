@@ -1,0 +1,123 @@
+@model RentKart.Core.Entities.Report
+@using RentKart.Core.Enums
+@{
+    ViewData["Title"] = "Report Details";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<div class="dashboard-container mx-n3 mt-n3 mb-n3">
+    <partial name="_AdminSidebar" />
+    
+    <main class="dashboard-main">
+        <div class="dashboard-header d-flex justify-content-between align-items-center">
+            <div>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary mb-2"><i class="bi bi-arrow-left"></i> Back to Reports</a>
+                <h2 class="dashboard-title">Report Details</h2>
+                <p class="text-muted mb-0">Reference ID: #@Model.Id</p>
+            </div>
+            <div>
+                @{
+                    var badgeClass = Model.Status switch
+                    {
+                        ReportStatus.Open => "bg-warning text-dark",
+                        ReportStatus.UnderReview => "bg-info text-dark",
+                        ReportStatus.Resolved => "bg-success",
+                        ReportStatus.Rejected => "bg-secondary",
+                        _ => "bg-secondary"
+                    };
+                }
+                <span class="badge @badgeClass rounded-pill fs-6 px-3 py-2">@Model.Status</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold border-bottom pb-2 mb-3">Report Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Target</div>
+                            <div class="col-sm-8">@Model.TargetType (ID: @Model.TargetId)</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Reported By</div>
+                            <div class="col-sm-8">@Model.Reporter?.Email</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Date Filed</div>
+                            <div class="col-sm-8">@Model.CreatedAt.ToString("f")</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Reason/Description</div>
+                            <div class="col-sm-8">
+                                <div class="p-3 bg-light rounded border">
+                                    @Model.Reason
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.Status == ReportStatus.Resolved || Model.Status == ReportStatus.Rejected)
+                        {
+                            <h5 class="card-title fw-bold border-bottom pb-2 mb-3 mt-4">Resolution</h5>
+                            <div class="row mb-3">
+                                <div class="col-sm-4 text-muted">Resolved By</div>
+                                <div class="col-sm-8">@(Model.ResolvedBy?.Email ?? Model.ResolvedByUserId)</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4 text-muted">Resolution Date</div>
+                                <div class="col-sm-8">@Model.ResolvedAt?.ToString("f")</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4 text-muted">Resolution Notes</div>
+                                <div class="col-sm-8">
+                                    <div class="p-3 bg-light rounded border">
+                                        @(string.IsNullOrEmpty(Model.ResolutionNotes) ? "No notes provided." : Model.ResolutionNotes)
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold border-bottom pb-2 mb-3">Update Status</h5>
+                        @if (Model.Status == ReportStatus.Open || Model.Status == ReportStatus.UnderReview)
+                        {
+                            <form asp-action="UpdateStatus" method="post">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                
+                                <div class="mb-3">
+                                    <label for="status" class="form-label fw-bold">New Status</label>
+                                    <select name="status" id="status" class="form-select">
+                                        <option value="@ReportStatus.UnderReview" selected="@(Model.Status == ReportStatus.UnderReview)">Under Review</option>
+                                        <option value="@ReportStatus.Resolved">Resolved</option>
+                                        <option value="@ReportStatus.Rejected">Rejected</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="resolutionNotes" class="form-label fw-bold">Resolution Notes</label>
+                                    <textarea name="resolutionNotes" id="resolutionNotes" class="form-control" rows="3" placeholder="Explain the action taken..."></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary w-100">Update Report</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                This report is already closed. No further actions can be taken.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

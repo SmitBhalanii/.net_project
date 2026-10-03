@@ -21,6 +21,10 @@ builder.Services.AddScoped<RentKart.Core.Interfaces.IReviewService, RentKart.Inf
 builder.Services.AddScoped<RentKart.Core.Interfaces.IWishlistService, RentKart.Infrastructure.Services.WishlistService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.INotificationService, RentKart.Infrastructure.Services.NotificationService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IReportingService, RentKart.Infrastructure.Services.ReportingService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IAuditLogService, RentKart.Infrastructure.Services.AuditLogService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IPlatformSettingsService, RentKart.Infrastructure.Services.PlatformSettingsService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IUserManagementService, RentKart.Infrastructure.Services.UserManagementService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IReportManagementService, RentKart.Infrastructure.Services.ReportManagementService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
