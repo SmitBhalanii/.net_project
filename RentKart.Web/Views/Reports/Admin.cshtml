@@ -1,0 +1,352 @@
+@model RentKart.Core.DTOs.Reports.AdminDashboardDto
+@{
+    ViewData["Title"] = "Admin Analytics";
+}
+
+<div class="d-flex">
+    <!-- Admin Sidebar matching existing style -->
+    <aside class="dashboard-sidebar bg-white border-end" style="width: 250px; min-height: calc(100vh - 70px);">
+        <div class="p-4">
+            <h5 class="fw-bold text-primary mb-4">Admin Dashboard</h5>
+            <a asp-controller="AdminDashboard" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a href="#" class="dashboard-nav-item"><i class="bi bi-people me-2"></i> Customers</a>
+            <a asp-controller="Category" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-tags me-2"></i> Categories</a>
+            <a asp-controller="Review" asp-action="Pending" class="dashboard-nav-item"><i class="bi bi-star-half me-2"></i> Reviews</a>
+            <a asp-controller="Notification" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-bell me-2"></i> Notifications</a>
+            <a asp-controller="Reports" asp-action="Admin" class="dashboard-nav-item active"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports & Analytics</a>
+        </div>
+    </aside>
+
+    <main class="flex-grow-1 p-4 bg-light">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Admin Analytics</h2>
+            
+            <form method="get" class="d-flex gap-2 align-items-center bg-white p-2 rounded shadow-sm">
+                <div>
+                    <label class="form-label small mb-0">Start Date</label>
+                    <input type="date" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+                </div>
+                <div>
+                    <label class="form-label small mb-0">End Date</label>
+                    <input type="date" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+                </div>
+                <div class="align-self-end">
+                    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                    <a asp-action="Admin" class="btn btn-outline-secondary btn-sm">Reset</a>
+                </div>
+            </form>
+        </div>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        }
+
+        <!-- KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Users</h6>
+                        <h3 class="fw-bold text-primary mb-0">@Model.TotalUsers.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Businesses</h6>
+                        <h3 class="fw-bold text-success mb-0">@Model.TotalBusinesses.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Equipment</h6>
+                        <h3 class="fw-bold text-info mb-0">@Model.TotalEquipment.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Bookings</h6>
+                        <h3 class="fw-bold text-warning mb-0">@Model.TotalBookings.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Revenue</h6>
+                        <h3 class="fw-bold text-success mb-0">₹@Model.TotalRevenue.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Active Rentals</h6>
+                        <h3 class="fw-bold text-primary mb-0">@Model.ActiveRentals.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <!-- Revenue Trend -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="mb-0 fw-bold">Revenue Trend (Last 12 Months)</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="revenueTrendChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Status -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="mb-0 fw-bold">Booking Status</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (!Model.BookingStatusDistribution.Any())
+                        {
+                            <p class="text-muted text-center">No data available for the selected period.</p>
+                        }
+                        else
+                        {
+                            <canvas id="bookingStatusChart" style="max-height: 250px;"></canvas>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <!-- Top Categories -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="mb-0 fw-bold">Top Categories</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (!Model.TopCategories.Any())
+                        {
+                            <p class="text-muted text-center">No data available.</p>
+                        }
+                        else
+                        {
+                            <canvas id="topCategoriesChart" style="max-height: 300px;"></canvas>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <!-- Top Equipment Table -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="mb-0 fw-bold">Top 10 Most Rented Equipment</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Equipment</th>
+                                    <th>Business</th>
+                                    <th>Category</th>
+                                    <th class="text-center">Rentals</th>
+                                    <th class="text-end">Revenue</th>
+                                    <th class="text-center">Avg Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!Model.TopEquipment.Any())
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">No data available.</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var item in Model.TopEquipment)
+                                    {
+                                        <tr>
+                                            <td class="fw-bold text-center">#@item.Rank</td>
+                                            <td>@item.EquipmentName</td>
+                                            <td>@item.BusinessName</td>
+                                            <td><span class="badge bg-light text-dark border">@item.CategoryName</span></td>
+                                            <td class="text-center">@item.RentalCount</td>
+                                            <td class="text-end fw-bold">₹@item.Revenue.ToString("N0")</td>
+                                            <td class="text-center">
+                                                @if (item.AverageRating > 0)
+                                                {
+                                                    <span><i class="bi bi-star-fill text-warning"></i> @item.AverageRating.ToString("F1")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not Rated</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Top Businesses Table -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="mb-0 fw-bold">Top Businesses by Revenue</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Business</th>
+                                    <th class="text-center">Completed Rentals</th>
+                                    <th class="text-end">Revenue</th>
+                                    <th class="text-center">Avg Rating</th>
+                                    <th class="text-center">Active Equipment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!Model.TopBusinesses.Any())
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">No data available.</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var item in Model.TopBusinesses)
+                                    {
+                                        <tr>
+                                            <td class="fw-bold text-center">#@item.Rank</td>
+                                            <td class="fw-bold">@item.BusinessName</td>
+                                            <td class="text-center">@item.CompletedRentals</td>
+                                            <td class="text-end fw-bold text-success">₹@item.Revenue.ToString("N0")</td>
+                                            <td class="text-center">
+                                                @if (item.AverageRating > 0)
+                                                {
+                                                    <span><i class="bi bi-star-fill text-warning"></i> @item.AverageRating.ToString("F1")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not Rated</span>
+                                                }
+                                            </td>
+                                            <td class="text-center">@item.ActiveEquipment</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Revenue Trend Chart
+            const revenueTrendCtx = document.getElementById('revenueTrendChart')?.getContext('2d');
+            if (revenueTrendCtx) {
+                const periods = @Html.Raw(Json.Serialize(Model.RevenueTrend.Select(r => r.Period)));
+                const revenues = @Html.Raw(Json.Serialize(Model.RevenueTrend.Select(r => r.Revenue)));
+                
+                new Chart(revenueTrendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: periods,
+                        datasets: [{
+                            label: 'Revenue (₹)',
+                            data: revenues,
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+            
+            // Booking Status Chart
+            const bookingStatusCtx = document.getElementById('bookingStatusChart')?.getContext('2d');
+            if (bookingStatusCtx) {
+                const statuses = @Html.Raw(Json.Serialize(Model.BookingStatusDistribution.Select(b => b.Status)));
+                const counts = @Html.Raw(Json.Serialize(Model.BookingStatusDistribution.Select(b => b.Count)));
+                
+                new Chart(bookingStatusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: statuses,
+                        datasets: [{
+                            data: counts,
+                            backgroundColor: ['#ffc107', '#198754', '#dc3545', '#6c757d', '#0d6efd'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Top Categories Chart
+            const topCategoriesCtx = document.getElementById('topCategoriesChart')?.getContext('2d');
+            if (topCategoriesCtx) {
+                const categoryNames = @Html.Raw(Json.Serialize(Model.TopCategories.Select(c => c.CategoryName)));
+                const categoryRentals = @Html.Raw(Json.Serialize(Model.TopCategories.Select(c => c.RentalCount)));
+                
+                new Chart(topCategoriesCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: categoryNames,
+                        datasets: [{
+                            label: 'Rentals',
+                            data: categoryRentals,
+                            backgroundColor: '#0dcaf0',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+        });
+    </script>
+}

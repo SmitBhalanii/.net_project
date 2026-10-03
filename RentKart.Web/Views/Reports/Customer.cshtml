@@ -1,0 +1,171 @@
+@model RentKart.Core.DTOs.Reports.CustomerStatisticsDto
+@{
+    ViewData["Title"] = "My Statistics";
+}
+
+<div class="d-flex">
+    <!-- Customer Sidebar matching existing style -->
+    <aside class="dashboard-sidebar bg-white border-end" style="width: 250px; min-height: calc(100vh - 70px);">
+        <div class="p-4">
+            <h5 class="fw-bold text-primary mb-4">Customer Dashboard</h5>
+            <a asp-controller="CustomerDashboard" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            <a asp-controller="Booking" asp-action="MyBookings" class="dashboard-nav-item"><i class="bi bi-calendar-check me-2"></i> Bookings</a>
+            <a asp-controller="Rental" asp-action="MyRentals" class="dashboard-nav-item"><i class="bi bi-arrow-left-right me-2"></i> Rentals</a>
+            <a asp-controller="Wishlist" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-heart me-2"></i> Wishlist</a>
+            <a asp-controller="Review" asp-action="MyReviews" class="dashboard-nav-item"><i class="bi bi-star me-2"></i> Reviews</a>
+            <a asp-controller="Notification" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-bell me-2"></i> Notifications</a>
+            <a asp-controller="Reports" asp-action="Customer" class="dashboard-nav-item active"><i class="bi bi-bar-chart me-2"></i> My Statistics</a>
+        </div>
+    </aside>
+
+    <main class="flex-grow-1 p-4 bg-light">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">My Statistics</h2>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total Bookings</h6>
+                        <h3 class="fw-bold text-primary mb-0">@Model.TotalBookings.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Active Rentals</h6>
+                        <h3 class="fw-bold text-warning mb-0">@Model.ActiveRentals.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Completed Rentals</h6>
+                        <h3 class="fw-bold text-success mb-0">@Model.CompletedRentals.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Total Spent</h6>
+                        <h3 class="fw-bold text-danger mb-0">₹@Model.TotalSpent.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Wishlist Items</h6>
+                        <h3 class="fw-bold text-info mb-0">@Model.WishlistItems.ToString("N0")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Avg Rating Given</h6>
+                        <h3 class="fw-bold text-warning mb-0">
+                            @if(Model.AverageRatingGiven > 0)
+                            {
+                                <span><i class="bi bi-star-fill"></i> @Model.AverageRatingGiven.ToString("F1")</span>
+                            }
+                            else
+                            {
+                                <span class="fs-6 text-muted">Not Rated</span>
+                            }
+                        </h3>
+                        <small class="text-muted">(@Model.ReviewsWritten reviews)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <!-- Monthly Rentals Trend -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="mb-0 fw-bold">My Rental History (Last 6 Months)</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="monthlyRentalsChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top Categories -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h5 class="mb-0 fw-bold">Most Rented Categories</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        @if (!Model.TopCategories.Any())
+                        {
+                            <div class="p-4 text-center text-muted">No category data available.</div>
+                        }
+                        else
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var cat in Model.TopCategories)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                        <span class="fw-bold">@cat.CategoryName</span>
+                                        <span class="badge bg-primary rounded-pill">@cat.RentalCount rentals</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Monthly Rentals Chart
+            const monthlyRentalsCtx = document.getElementById('monthlyRentalsChart')?.getContext('2d');
+            if (monthlyRentalsCtx) {
+                const months = @Html.Raw(Json.Serialize(Model.MonthlyRentals.Select(r => r.Month)));
+                const counts = @Html.Raw(Json.Serialize(Model.MonthlyRentals.Select(r => r.Count)));
+                
+                new Chart(monthlyRentalsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Rentals',
+                            data: counts,
+                            backgroundColor: '#0d6efd',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { 
+                            y: { 
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            } 
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}
