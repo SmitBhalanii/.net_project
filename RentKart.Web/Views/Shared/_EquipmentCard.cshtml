@@ -27,7 +27,31 @@
                 <div class="rk-card-price">₹@Model.Price.ToString("N0")</div>
                 <small class="text-muted">/ @Model.PriceUnit</small>
             </div>
-            <a href="#" class="btn btn-primary btn-sm px-3 rounded-pill">Details</a>
-        </div>
+            <div class="d-flex gap-2">
+                @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
+                {
+                    @if (Model.IsInWishlist)
+                    {
+                        <form asp-controller="Wishlist" asp-action="Remove" method="post" class="m-0">
+                            <input type="hidden" name="equipmentId" value="@Model.Id" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle" title="Remove from Wishlist">
+                                <i class="bi bi-heart-fill"></i>
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="Wishlist" asp-action="Add" method="post" class="m-0">
+                            <input type="hidden" name="equipmentId" value="@Model.Id" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle" title="Add to Wishlist">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        </form>
+                    }
+                }
+                <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary btn-sm px-3 rounded-pill">Details</a>
+            </div>        </div>
     </div>
 </div>

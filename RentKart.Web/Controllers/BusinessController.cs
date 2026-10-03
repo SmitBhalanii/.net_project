@@ -14,11 +14,13 @@ public class BusinessController : Controller
 {
     private readonly IBusinessService _businessService;
     private readonly IFileService _fileService;
+    private readonly IReviewService _reviewService;
 
-    public BusinessController(IBusinessService businessService, IFileService fileService)
+    public BusinessController(IBusinessService businessService, IFileService fileService, IReviewService reviewService)
     {
         _businessService = businessService;
         _fileService = fileService;
+        _reviewService = reviewService;
     }
 
     [AllowAnonymous]
@@ -85,6 +87,20 @@ public class BusinessController : Controller
                 ReviewCount = 0
             }).ToList()
         };
+
+        var reviews = await _reviewService.GetBusinessReviewsAsync(id);
+        var publishedReviews = reviews.Where(r => r.Status == RentKart.Core.Enums.ReviewStatus.Published).ToList();
+        
+        ViewBag.Reviews = publishedReviews;
+        ViewBag.AverageRating = publishedReviews.Any() ? publishedReviews.Average(r => r.BusinessRating) : 0;
+        ViewBag.ReviewCount = publishedReviews.Count;
+        
+        var ratingDistribution = new System.Collections.Generic.Dictionary<int, int>();
+        for (int i = 5; i >= 1; i--)
+        {
+            ratingDistribution[i] = publishedReviews.Count(r => r.BusinessRating == i);
+        }
+        ViewBag.RatingDistribution = ratingDistribution;
 
         return View(viewModel);
     }

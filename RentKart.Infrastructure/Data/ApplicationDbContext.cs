@@ -17,7 +17,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<EquipmentImage> EquipmentImages => Set<EquipmentImage>();
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<Review> Reviews => Set<Review>();
-    public DbSet<Wishlist> Wishlists => Set<Wishlist>();
     public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<DamageReport> DamageReports => Set<DamageReport>();

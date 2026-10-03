@@ -13,7 +13,8 @@
             <a href="#" class="dashboard-nav-item active"><i class="bi bi-house me-2"></i> Dashboard</a>
             <a asp-controller="Booking" asp-action="MyBookings" class="dashboard-nav-item"><i class="bi bi-calendar-check me-2"></i> My Bookings</a>
             <a asp-controller="Rental" asp-action="MyRentals" class="dashboard-nav-item"><i class="bi bi-bag-check me-2"></i> My Rentals</a>
-            <a href="#" class="dashboard-nav-item"><i class="bi bi-heart me-2"></i> Wishlist</a>
+            <a asp-controller="Wishlist" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-heart me-2"></i> Wishlist</a>
+            <a asp-controller="Review" asp-action="MyReviews" class="dashboard-nav-item"><i class="bi bi-star me-2"></i> My Reviews</a>
             <a href="#" class="dashboard-nav-item"><i class="bi bi-person me-2"></i> Profile</a>
         </div>
     </aside>

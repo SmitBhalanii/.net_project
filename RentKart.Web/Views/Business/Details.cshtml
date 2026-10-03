@@ -30,7 +30,7 @@
         </div>
         
         <!-- Action Buttons (for Owner) -->
-        @if (User.IsInRole("Business") && User.Identity.IsAuthenticated)
+        @if (User.IsInRole("Business") && User.Identity?.IsAuthenticated == true)
         {
             // Simple check if this is their profile
             <div class="position-absolute top-0 end-0 p-3">
@@ -57,6 +57,83 @@
                 <p style="white-space: pre-line; line-height: 1.7;">
                     @(string.IsNullOrEmpty(Model.Description) ? "No description provided." : Model.Description)
                 </p>
+            </div>
+
+            <!-- Business Reviews Section -->
+            <div class="mb-5 border-top pt-4">
+                <h4 class="fw-bold mb-4">Business Ratings & Reviews</h4>
+                @if (ViewBag.ReviewCount > 0)
+                {
+                    <div class="card bg-light mb-4 shadow-sm border-0">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 text-center border-end">
+                                    <h1 class="display-4 fw-bold mb-0">@ViewBag.AverageRating.ToString("0.0")</h1>
+                                    <div class="text-warning mb-2 fs-5">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= Math.Round(ViewBag.AverageRating))
+                                            {
+                                                <i class="bi bi-star-fill"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-star"></i>
+                                            }
+                                        }
+                                    </div>
+                                    <p class="text-muted mb-0">Based on @ViewBag.ReviewCount reviews</p>
+                                </div>
+                                <div class="col-md-8">
+                                    @{
+                                        var distribution = (Dictionary<int, int>)ViewBag.RatingDistribution;
+                                        foreach (var kvp in distribution)
+                                        {
+                                            var percentage = ViewBag.ReviewCount > 0 ? (kvp.Value * 100.0 / ViewBag.ReviewCount) : 0;
+                                            <div class="d-flex align-items-center mb-1">
+                                                <span class="text-muted small me-2" style="width: 30px;">@kvp.Key <i class="bi bi-star-fill text-warning"></i></span>
+                                                <div class="progress flex-grow-1" style="height: 8px;">
+                                                    <div class="progress-bar bg-warning" role="progressbar" style="width: @percentage%" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <span class="text-muted small ms-2" style="width: 25px;">@kvp.Value</span>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review-list">
+                        @foreach (var review in (IEnumerable<RentKart.Core.Entities.Review>)ViewBag.Reviews)
+                        {
+                            <div class="card mb-3 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">@review.Customer.FirstName @review.Customer.LastName.Substring(0, 1).</h6>
+                                            <small class="text-muted">@review.CreatedAt.ToString("MMMM dd, yyyy")</small>
+                                        </div>
+                                        <div class="text-warning">
+                                            @for (int i = 0; i < review.BusinessRating; i++)
+                                            {
+                                                <i class="bi bi-star-fill"></i>
+                                            }
+                                        </div>
+                                    </div>
+                                    <h6 class="fw-bold mt-2">@review.Title</h6>
+                                    <p class="mb-0 text-muted">@review.Comment</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-light border">
+                        <i class="bi bi-info-circle me-1"></i> No business reviews yet.
+                    </div>
+                }
             </div>
 
             <!-- Equipment Section -->
@@ -112,7 +189,7 @@
                         
                         <!-- Protected Contact Details based on rules (only show where appropriate, but MVP says just show City/State primarily, 
                              though if user wants to rent, they might need contact info. We'll show it for now.) -->
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="mb-3 d-flex">
                                 <i class="bi bi-envelope text-primary fs-5 me-3"></i>

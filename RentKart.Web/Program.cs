@@ -17,6 +17,8 @@ builder.Services.AddScoped<RentKart.Core.Interfaces.IPaymentService, RentKart.In
 builder.Services.AddScoped<RentKart.Core.Interfaces.IRentalService, RentKart.Infrastructure.Services.RentalService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IQrCodeService, RentKart.Infrastructure.Services.QrCodeService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IFileService, RentKart.Web.Services.FileService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IReviewService, RentKart.Infrastructure.Services.ReviewService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IWishlistService, RentKart.Infrastructure.Services.WishlistService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

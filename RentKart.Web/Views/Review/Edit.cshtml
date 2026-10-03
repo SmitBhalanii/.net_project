@@ -1,0 +1,80 @@
+@model RentKart.Web.ViewModels.Review.EditReviewViewModel
+
+@{
+    ViewData["Title"] = "Edit Review";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Edit your review</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        You are editing your review for <strong>@Model.EquipmentName</strong> provided by <strong>@Model.BusinessName</strong>.
+                        <br />
+                        <small class="text-warning"><i class="bi bi-info-circle"></i> Note: Editing this review will return it to Pending status for moderation.</small>
+                    </p>
+
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="EquipmentName" />
+                        <input type="hidden" asp-for="BusinessName" />
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5>Equipment Rating</h5>
+                                <div class="form-group">
+                                    <select asp-for="EquipmentRating" class="form-select">
+                                        <option value="5">5 - Excellent</option>
+                                        <option value="4">4 - Good</option>
+                                        <option value="3">3 - Average</option>
+                                        <option value="2">2 - Poor</option>
+                                        <option value="1">1 - Terrible</option>
+                                    </select>
+                                    <span asp-validation-for="EquipmentRating" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Business Rating</h5>
+                                <div class="form-group">
+                                    <select asp-for="BusinessRating" class="form-select">
+                                        <option value="5">5 - Excellent</option>
+                                        <option value="4">4 - Good</option>
+                                        <option value="3">3 - Average</option>
+                                        <option value="2">2 - Poor</option>
+                                        <option value="1">1 - Terrible</option>
+                                    </select>
+                                    <span asp-validation-for="BusinessRating" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-bold">Review Title</label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Comment" class="form-label fw-bold"></label>
+                            <textarea asp-for="Comment" class="form-control" rows="5"></textarea>
+                            <span asp-validation-for="Comment" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Update Review</button>
+                            <a asp-action="MyReviews" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

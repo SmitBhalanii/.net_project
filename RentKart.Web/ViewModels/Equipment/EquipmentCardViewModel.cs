@@ -11,4 +11,5 @@ public class EquipmentCardViewModel
     public string PriceUnit { get; set; } = "day";
     public double Rating { get; set; }
     public int ReviewCount { get; set; }
+    public bool IsInWishlist { get; set; }
 }

@@ -8,14 +8,18 @@ public class WishlistItemConfiguration : IEntityTypeConfiguration<WishlistItem>
 {
     public void Configure(EntityTypeBuilder<WishlistItem> builder)
     {
-        builder.HasKey(wi => wi.Id);
-        
-        // Prevent duplicate equipment in same wishlist
-        builder.HasIndex(wi => new { wi.WishlistId, wi.EquipmentId }).IsUnique();
+        builder.HasKey(w => w.Id);
 
-        builder.HasOne(wi => wi.Equipment)
-            .WithMany(e => e.WishlistItems)
-            .HasForeignKey(wi => wi.EquipmentId)
+        builder.HasOne(w => w.Customer)
+            .WithMany()
+            .HasForeignKey(w => w.CustomerId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(w => w.Equipment)
+            .WithMany(e => e.WishlistItems)
+            .HasForeignKey(w => w.EquipmentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(w => new { w.CustomerId, w.EquipmentId }).IsUnique();
     }
 }
