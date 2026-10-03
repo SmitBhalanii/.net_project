@@ -22,6 +22,7 @@
             <a class="nav-link" asp-controller="CustomerDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
         }
     </li>
+    @await Component.InvokeAsync("NotificationBell")
     <li class="nav-item">
         <form class="form-inline d-inline" asp-controller="Account" asp-action="Logout" method="post">
             <button type="submit" class="nav-link btn btn-link" style="border: none; background: transparent;">Logout</button>

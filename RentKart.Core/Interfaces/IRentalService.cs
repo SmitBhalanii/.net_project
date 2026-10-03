@@ -15,4 +15,5 @@ public interface IRentalService
     Task<Rental> IssueEquipmentAsync(int rentalId, string staffId, EquipmentCondition condition, string? notes);
     Task<Rental> ReturnEquipmentAsync(int rentalId, string staffId, EquipmentCondition condition, bool damageFound, string? damageDescription, string? notes);
     Task<Equipment?> GetEquipmentByCodeAsync(string equipmentCode);
+    Task ProcessDueNotificationsAsync();
 }

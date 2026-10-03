@@ -13,10 +13,12 @@ namespace RentKart.Infrastructure.Services;
 public class ReviewService : IReviewService
 {
     private readonly ApplicationDbContext _context;
+    private readonly INotificationService _notificationService;
 
-    public ReviewService(ApplicationDbContext context)
+    public ReviewService(ApplicationDbContext context, INotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     public async Task<bool> CanCustomerReviewAsync(string customerId, int rentalId)
@@ -41,6 +43,15 @@ public class ReviewService : IReviewService
 
         _context.Reviews.Add(review);
         await _context.SaveChangesAsync();
+        
+        await _notificationService.CreateNotificationAsync(
+            review.CustomerId,
+            NotificationType.ReviewSubmitted,
+            "Review Submitted",
+            "Your review has been submitted successfully. It will appear after approval.",
+            "Review",
+            review.Id.ToString());
+            
         return review;
     }
 
@@ -121,6 +132,32 @@ public class ReviewService : IReviewService
         review.UpdatedAt = DateTime.UtcNow;
         
         await _context.SaveChangesAsync();
+        
+        var reviewWithIncludes = await _context.Reviews.Include(r => r.Equipment).FirstOrDefaultAsync(r => r.Id == reviewId);
+        if (reviewWithIncludes != null)
+        {
+            if (status == ReviewStatus.Published)
+            {
+                await _notificationService.CreateNotificationAsync(
+                    reviewWithIncludes.CustomerId,
+                    NotificationType.ReviewApproved,
+                    "Review Published",
+                    $"Your review for {reviewWithIncludes.Equipment.Name} has been published.",
+                    "Review",
+                    reviewWithIncludes.Id.ToString());
+            }
+            else if (status == ReviewStatus.Rejected)
+            {
+                await _notificationService.CreateNotificationAsync(
+                    reviewWithIncludes.CustomerId,
+                    NotificationType.ReviewRejected,
+                    "Review Not Published",
+                    $"Your review for {reviewWithIncludes.Equipment.Name} was not published as it violated our guidelines.",
+                    "Review",
+                    reviewWithIncludes.Id.ToString());
+            }
+        }
+        
         return true;
     }
 }

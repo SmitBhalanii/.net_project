@@ -15,6 +15,13 @@
             <a href="#" class="dashboard-nav-item"><i class="bi bi-people me-2"></i> Customers</a>
             <a asp-controller="Category" asp-action="Index" class="dashboard-nav-item"><i class="bi bi-tags me-2"></i> Categories</a>
             <a asp-controller="Review" asp-action="Pending" class="dashboard-nav-item"><i class="bi bi-star-half me-2"></i> Reviews</a>
+            <a asp-controller="Notification" asp-action="Index" class="dashboard-nav-item">
+                <i class="bi bi-bell me-2"></i> Notifications
+                @if (ViewBag.UnreadNotificationCount != null && ViewBag.UnreadNotificationCount > 0)
+                {
+                    <span class="badge bg-danger ms-1">@ViewBag.UnreadNotificationCount</span>
+                }
+            </a>
             <a href="#" class="dashboard-nav-item"><i class="bi bi-file-earmark-bar-graph me-2"></i> Reports</a>
         </div>
     </aside>
@@ -51,6 +58,36 @@
                     <div class="dashboard-stat-title">Total Bookings</div>
                     <div class="dashboard-stat-value">0</div>
                 </div>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 fw-bold">Recent Notifications</h5>
+                <a asp-controller="Notification" asp-action="Index" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                @if (ViewBag.RecentNotifications != null && ((IEnumerable<RentKart.Web.ViewModels.Notification.NotificationViewModel>)ViewBag.RecentNotifications).Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var notification in (IEnumerable<RentKart.Web.ViewModels.Notification.NotificationViewModel>)ViewBag.RecentNotifications)
+                        {
+                            <a asp-controller="Notification" asp-action="Index" class="list-group-item list-group-item-action p-3 @(!notification.IsRead ? "bg-light border-start border-primary border-4" : "")">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1 fw-bold">@notification.Title</h6>
+                                    <small class="text-muted">@notification.CreatedAt.ToString("g")</small>
+                                </div>
+                                <p class="mb-1">@notification.Message</p>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="p-4 text-center text-muted">
+                        No recent notifications.
+                    </div>
+                }
             </div>
         </div>
     </main>

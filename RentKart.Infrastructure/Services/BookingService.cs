@@ -13,10 +13,12 @@ namespace RentKart.Infrastructure.Services;
 public class BookingService : IBookingService
 {
     private readonly ApplicationDbContext _context;
+    private readonly INotificationService _notificationService;
 
-    public BookingService(ApplicationDbContext context)
+    public BookingService(ApplicationDbContext context, INotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     public async Task<Booking> CreateBookingAsync(Booking booking)
@@ -71,6 +73,23 @@ public class BookingService : IBookingService
 
         _context.Bookings.Add(booking);
         await _context.SaveChangesAsync();
+
+        await _notificationService.CreateNotificationAsync(
+            booking.CustomerId,
+            NotificationType.BookingCreated,
+            "Booking Request Sent",
+            $"Your booking {booking.BookingNumber} has been sent to {equipment.Business.BusinessName}.",
+            "Booking",
+            booking.Id.ToString());
+
+        // Notify Business Admin
+        await _notificationService.CreateNotificationAsync(
+            equipment.Business.UserId,
+            NotificationType.BookingCreated,
+            "New Booking Request",
+            $"New booking request {booking.BookingNumber} received for {equipment.Name}.",
+            "Booking",
+            booking.Id.ToString());
 
         return booking;
     }
@@ -157,6 +176,28 @@ public class BookingService : IBookingService
         booking.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        var equipment = await _context.Equipment.Include(e => e.Business).FirstOrDefaultAsync(e => e.Id == booking.EquipmentId);
+
+        if (equipment != null)
+        {
+            await _notificationService.CreateNotificationAsync(
+                booking.CustomerId,
+                NotificationType.BookingApproved,
+                "Booking Approved",
+                $"Your booking {booking.BookingNumber} has been approved by {equipment.Business.BusinessName}.",
+                "Booking",
+                booking.Id.ToString());
+
+            await _notificationService.CreateNotificationAsync(
+                booking.CustomerId,
+                NotificationType.PaymentRequired,
+                "Payment Required",
+                $"Your booking {booking.BookingNumber} is approved. Please complete payment to confirm your rental.",
+                "Booking",
+                booking.Id.ToString());
+        }
+
         return true;
     }
 
@@ -175,6 +216,26 @@ public class BookingService : IBookingService
         booking.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        var equipment = await _context.Equipment.Include(e => e.Business).FirstOrDefaultAsync(e => e.Id == booking.EquipmentId);
+        
+        if (equipment != null)
+        {
+            string message = $"Your booking {booking.BookingNumber} was rejected by {equipment.Business.BusinessName}.";
+            if (!string.IsNullOrWhiteSpace(businessNote))
+            {
+                message += $" Reason: {businessNote}";
+            }
+
+            await _notificationService.CreateNotificationAsync(
+                booking.CustomerId,
+                NotificationType.BookingRejected,
+                "Booking Rejected",
+                message,
+                "Booking",
+                booking.Id.ToString());
+        }
+
         return true;
     }
 
@@ -200,6 +261,27 @@ public class BookingService : IBookingService
         booking.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        await _notificationService.CreateNotificationAsync(
+            booking.CustomerId,
+            NotificationType.BookingCancelled,
+            "Booking Cancelled",
+            $"Your booking {booking.BookingNumber} has been cancelled.",
+            "Booking",
+            booking.Id.ToString());
+
+        var equipment = await _context.Equipment.Include(e => e.Business).FirstOrDefaultAsync(e => e.Id == booking.EquipmentId);
+        if (equipment != null)
+        {
+            await _notificationService.CreateNotificationAsync(
+                equipment.Business.UserId,
+                NotificationType.BookingCancelled,
+                "Booking Cancelled",
+                $"Booking {booking.BookingNumber} has been cancelled by the customer.",
+                "Booking",
+                booking.Id.ToString());
+        }
+
         return true;
     }
 

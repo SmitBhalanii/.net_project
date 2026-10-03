@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace RentKart.Core.Entities;
@@ -12,4 +13,6 @@ public class ApplicationUser : IdentityUser
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public bool IsActive { get; set; }
+    
+    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

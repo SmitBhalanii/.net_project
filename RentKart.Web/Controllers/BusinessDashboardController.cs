@@ -11,12 +11,14 @@ public class BusinessDashboardController : Controller
     private readonly IRentalService _rentalService;
     private readonly IBusinessService _businessService;
     private readonly Microsoft.AspNetCore.Identity.UserManager<RentKart.Core.Entities.ApplicationUser> _userManager;
+    private readonly INotificationService _notificationService;
 
-    public BusinessDashboardController(IRentalService rentalService, IBusinessService businessService, Microsoft.AspNetCore.Identity.UserManager<RentKart.Core.Entities.ApplicationUser> userManager)
+    public BusinessDashboardController(IRentalService rentalService, IBusinessService businessService, Microsoft.AspNetCore.Identity.UserManager<RentKart.Core.Entities.ApplicationUser> userManager, INotificationService notificationService)
     {
         _rentalService = rentalService;
         _businessService = businessService;
         _userManager = userManager;
+        _notificationService = notificationService;
     }
 
     public async System.Threading.Tasks.Task<IActionResult> Index()
@@ -33,6 +35,24 @@ public class BusinessDashboardController : Controller
         ViewBag.ActiveRentals = rentals.Count(r => r.Status == RentKart.Core.Enums.RentalStatus.Active);
         ViewBag.TodayReturns = rentals.Count(r => r.Status == RentKart.Core.Enums.RentalStatus.Returned && r.ActualReturnDate?.Date == System.DateTime.UtcNow.Date);
         ViewBag.OverdueRentals = rentals.Count(r => r.Status == RentKart.Core.Enums.RentalStatus.Active && System.DateTime.UtcNow.Date > r.ExpectedReturnDate.Date);
+
+        await _rentalService.ProcessDueNotificationsAsync();
+
+        var notifications = await _notificationService.GetUserNotificationsAsync(user.Id, 1, 5);
+        var unreadCount = await _notificationService.GetUnreadCountAsync(user.Id);
+
+        ViewBag.RecentNotifications = notifications.Select(n => new RentKart.Web.ViewModels.Notification.NotificationViewModel
+        {
+            Id = n.Id,
+            NotificationType = n.NotificationType,
+            Title = n.Title,
+            Message = n.Message,
+            RelatedEntityType = n.RelatedEntityType,
+            RelatedEntityId = n.RelatedEntityId,
+            IsRead = n.IsRead,
+            CreatedAt = n.CreatedAt
+        }).ToList();
+        ViewBag.UnreadNotificationCount = unreadCount;
 
         return View();
     }

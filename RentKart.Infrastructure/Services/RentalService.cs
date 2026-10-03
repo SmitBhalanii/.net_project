@@ -13,10 +13,12 @@ namespace RentKart.Infrastructure.Services;
 public class RentalService : IRentalService
 {
     private readonly ApplicationDbContext _context;
+    private readonly INotificationService _notificationService;
 
-    public RentalService(ApplicationDbContext context)
+    public RentalService(ApplicationDbContext context, INotificationService notificationService)
     {
         _context = context;
+        _notificationService = notificationService;
     }
 
     public async Task<Rental?> GetRentalByIdAsync(int rentalId)
@@ -94,6 +96,18 @@ public class RentalService : IRentalService
         _context.Rentals.Add(rental);
         await _context.SaveChangesAsync();
 
+        var equipment = await _context.Equipment.Include(e => e.Business).FirstOrDefaultAsync(e => e.Id == booking.EquipmentId);
+        if (equipment != null)
+        {
+            await _notificationService.CreateNotificationAsync(
+                booking.CustomerId,
+                NotificationType.PickupReady,
+                "Ready for Pickup",
+                $"Your {equipment.Name} is ready for pickup at {equipment.Business.BusinessName}.",
+                "Booking",
+                booking.Id.ToString());
+        }
+
         return rental;
     }
 
@@ -126,6 +140,27 @@ public class RentalService : IRentalService
         rental.Equipment.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        var equipment = await _context.Equipment.FirstOrDefaultAsync(e => e.Id == rental.EquipmentId);
+        if (equipment != null)
+        {
+            await _notificationService.CreateNotificationAsync(
+                rental.CustomerId,
+                NotificationType.EquipmentIssued,
+                "Equipment Issued",
+                $"{equipment.Name} has been successfully issued to you. Rental is now active.",
+                "Rental",
+                rental.Id.ToString());
+                
+            await _notificationService.CreateNotificationAsync(
+                rental.CustomerId,
+                NotificationType.RentalStarted,
+                "Rental Started",
+                $"Your rental for {equipment.Name} has started. Expected return: {rental.ExpectedReturnDate:dd MMM yyyy}",
+                "Rental",
+                rental.Id.ToString());
+        }
+
         return rental;
     }
 
@@ -163,6 +198,27 @@ public class RentalService : IRentalService
         rental.Equipment.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
+
+        var equipment = await _context.Equipment.FirstOrDefaultAsync(e => e.Id == rental.EquipmentId);
+        if (equipment != null)
+        {
+            await _notificationService.CreateNotificationAsync(
+                rental.CustomerId,
+                NotificationType.EquipmentReturned,
+                "Equipment Returned",
+                $"{equipment.Name} has been successfully returned.",
+                "Rental",
+                rental.Id.ToString());
+                
+            await _notificationService.CreateNotificationAsync(
+                rental.CustomerId,
+                NotificationType.RentalCompleted,
+                "Rental Completed",
+                $"Your rental of {equipment.Name} has been completed. You can now leave a review.",
+                "Rental",
+                rental.Id.ToString());
+        }
+
         return rental;
     }
 
@@ -171,5 +227,73 @@ public class RentalService : IRentalService
         return await _context.Equipment
             .Include(e => e.Business)
             .FirstOrDefaultAsync(e => e.EquipmentCode == equipmentCode);
+    }
+
+    public async Task ProcessDueNotificationsAsync()
+    {
+        var activeRentals = await _context.Rentals
+            .Include(r => r.Equipment)
+            .Include(r => r.Business)
+            .Where(r => r.Status == RentalStatus.Active)
+            .ToListAsync();
+
+        var today = DateTime.UtcNow.Date;
+
+        foreach (var rental in activeRentals)
+        {
+            var expectedDate = rental.ExpectedReturnDate.Date;
+            
+            if (expectedDate == today.AddDays(1))
+            {
+                // Check if notification already exists
+                var exists = await _context.Notifications.AnyAsync(n => 
+                    n.UserId == rental.CustomerId && 
+                    n.RelatedEntityId == rental.Id.ToString() && 
+                    n.NotificationType == NotificationType.RentalDueSoon);
+                    
+                if (!exists)
+                {
+                    await _notificationService.CreateNotificationAsync(
+                        rental.CustomerId,
+                        NotificationType.RentalDueSoon,
+                        "Rental Due Tomorrow",
+                        $"Your {rental.Equipment.Name} rental is due tomorrow. Please return it to {rental.Business.BusinessName} on time.",
+                        "Rental",
+                        rental.Id.ToString());
+                }
+            }
+            else if (today > expectedDate)
+            {
+                int daysOverdue = (today - expectedDate).Days;
+                
+                var latestOverdueNotification = await _context.Notifications
+                    .Where(n => 
+                        n.UserId == rental.CustomerId && 
+                        n.RelatedEntityId == rental.Id.ToString() && 
+                        n.NotificationType == NotificationType.RentalOverdue)
+                    .OrderByDescending(n => n.CreatedAt)
+                    .FirstOrDefaultAsync();
+                    
+                // Generate if none, or if it has been more than 24 hours since the last overdue notification
+                if (latestOverdueNotification == null || latestOverdueNotification.CreatedAt.Date < today)
+                {
+                    await _notificationService.CreateNotificationAsync(
+                        rental.CustomerId,
+                        NotificationType.RentalOverdue,
+                        "Rental Overdue",
+                        $"Your {rental.Equipment.Name} rental is overdue by {daysOverdue} days. Please return the equipment to {rental.Business.BusinessName}.",
+                        "Rental",
+                        rental.Id.ToString());
+                        
+                    await _notificationService.CreateNotificationAsync(
+                        rental.Business.UserId,
+                        NotificationType.RentalOverdue,
+                        "Rental Overdue",
+                        $"{rental.Equipment.Name} rental is overdue by {daysOverdue} days.",
+                        "Rental",
+                        rental.Id.ToString());
+                }
+            }
+        }
     }
 }

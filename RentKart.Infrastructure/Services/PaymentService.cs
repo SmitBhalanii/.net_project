@@ -16,13 +16,15 @@ public class PaymentService : IPaymentService
     private readonly IPaymentGateway _paymentGateway;
     private readonly IBookingService _bookingService;
     private readonly IRentalService _rentalService;
+    private readonly INotificationService _notificationService;
 
-    public PaymentService(ApplicationDbContext context, IPaymentGateway paymentGateway, IBookingService bookingService, IRentalService rentalService)
+    public PaymentService(ApplicationDbContext context, IPaymentGateway paymentGateway, IBookingService bookingService, IRentalService rentalService, INotificationService notificationService)
     {
         _context = context;
         _paymentGateway = paymentGateway;
         _bookingService = bookingService;
         _rentalService = rentalService;
+        _notificationService = notificationService;
     }
 
     public async Task<Payment?> GetPaymentByIdAsync(int id)
@@ -139,6 +141,27 @@ public class PaymentService : IPaymentService
         
         // 11. Save changes
         await _context.SaveChangesAsync();
+
+        if (result.IsSuccess)
+        {
+            await _notificationService.CreateNotificationAsync(
+                customerId,
+                NotificationType.PaymentSuccessful,
+                "Payment Successful",
+                $"Payment of ₹{amount:N2} for booking {booking.BookingNumber} was successful.",
+                "Payment",
+                payment.Id.ToString());
+        }
+        else
+        {
+            await _notificationService.CreateNotificationAsync(
+                customerId,
+                NotificationType.PaymentFailed,
+                "Payment Failed",
+                $"Your payment for booking {booking.BookingNumber} was unsuccessful. You can try again.",
+                "Payment",
+                payment.Id.ToString());
+        }
 
         return payment;
     }
