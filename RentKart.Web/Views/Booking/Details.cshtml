@@ -131,8 +131,33 @@
                         <span>@Model.TotalAmount.ToString("c")</span>
                     </div>
                 </div>
-                <div class="card-footer text-muted small text-center">
-                    Payment is handled offline during pickup.
+                <div class="card-footer text-center">
+                    @if (Model.PaymentStatus == RentKart.Core.Enums.PaymentStatus.Succeeded)
+                    {
+                        <div class="alert alert-success mb-0 py-2">
+                            <i class="bi bi-check-circle-fill me-1"></i> Payment Completed
+                        </div>
+                    }
+                    else if (Model.PaymentStatus == RentKart.Core.Enums.PaymentStatus.Processing)
+                    {
+                        <div class="alert alert-info mb-0 py-2">
+                            <i class="bi bi-arrow-repeat me-1"></i> Payment Processing
+                        </div>
+                    }
+                    else if (Model.Status == RentKart.Core.Enums.BookingStatus.Approved)
+                    {
+                        <a asp-controller="Payment" asp-action="Create" asp-route-bookingId="@Model.Id" class="btn btn-success w-100 fw-bold">
+                            <i class="bi bi-credit-card me-2"></i>Pay Now
+                        </a>
+                    }
+                    else if (Model.Status == RentKart.Core.Enums.BookingStatus.Pending)
+                    {
+                        <span class="text-muted small"><i class="bi bi-info-circle me-1"></i>Payment required after approval</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted small">Payment not required</span>
+                    }
                 </div>
             </div>
         </div>

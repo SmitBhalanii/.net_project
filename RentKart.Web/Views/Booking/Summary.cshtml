@@ -1,0 +1,197 @@
+@model RentKart.Web.ViewModels.Booking.BookingSummaryViewModel
+@{
+    ViewData["Title"] = "Booking Summary";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h2 class="mb-4">Review Your Booking Request</h2>
+            
+            <form asp-action="Confirm" method="post" id="confirmForm">
+                <input type="hidden" asp-for="EquipmentId" />
+                <input type="hidden" asp-for="EquipmentName" />
+                <input type="hidden" asp-for="EquipmentImageUrl" />
+                <input type="hidden" asp-for="BusinessName" />
+                <input type="hidden" asp-for="PickupLocation" />
+                <input type="hidden" asp-for="StartDate" />
+                <input type="hidden" asp-for="EndDate" />
+                <input type="hidden" asp-for="RentalDays" />
+                <input type="hidden" asp-for="DailyRate" />
+                <input type="hidden" asp-for="RentalAmount" />
+                <input type="hidden" asp-for="SecurityDeposit" />
+                <input type="hidden" asp-for="TotalAmount" />
+                <input type="hidden" asp-for="CustomerName" />
+                <input type="hidden" asp-for="CustomerEmail" />
+                <input type="hidden" asp-for="CustomerPhone" />
+                <input type="hidden" asp-for="CustomerNote" />
+                
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-4">
+                    <div class="col-md-7">
+                        <!-- Equipment Details -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                                <h5 class="card-title text-primary"><i class="bi bi-box-seam me-2"></i>Equipment Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex">
+                                    @if (!string.IsNullOrEmpty(Model.EquipmentImageUrl))
+                                    {
+                                        <img src="@Model.EquipmentImageUrl" alt="@Model.EquipmentName" class="rounded me-3 object-fit-cover" style="width: 80px; height: 80px;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center text-muted" style="width: 80px; height: 80px;">
+                                            <i class="bi bi-image fs-3"></i>
+                                        </div>
+                                    }
+                                    <div>
+                                        <h5 class="mb-1">@Model.EquipmentName</h5>
+                                        <p class="text-muted mb-0 small">Provider: @Model.BusinessName</p>
+                                        <p class="text-muted small"><i class="bi bi-geo-alt-fill me-1 text-danger"></i> Pickup: @Model.PickupLocation</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Customer Details -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                                <h5 class="card-title text-primary"><i class="bi bi-person-lines-fill me-2"></i>Your Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-1"><strong>Name:</strong> @Model.CustomerName</p>
+                                <p class="mb-1"><strong>Email:</strong> @Model.CustomerEmail</p>
+                                <p class="mb-1"><strong>Phone:</strong> @Model.CustomerPhone</p>
+                                @if (!string.IsNullOrWhiteSpace(Model.CustomerNote))
+                                {
+                                    <hr />
+                                    <p class="mb-1"><strong>Special Requests/Note:</strong></p>
+                                    <p class="text-muted small">@Model.CustomerNote</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <!-- Rental Dates & Price Breakdown -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-primary text-white pt-4 pb-3">
+                                <h5 class="card-title mb-0"><i class="bi bi-calendar-check me-2"></i>Rental Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <small class="text-muted d-block">Start Date</small>
+                                        <strong>@Model.StartDate.ToString("MMM dd, yyyy")</strong>
+                                    </div>
+                                    <div class="text-center text-muted px-2">
+                                        <i class="bi bi-arrow-right mt-3 d-block"></i>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted d-block">End Date</small>
+                                        <strong>@Model.EndDate.ToString("MMM dd, yyyy")</strong>
+                                    </div>
+                                </div>
+                                <div class="text-center mb-3">
+                                    <span class="badge bg-light text-dark border">@Model.RentalDays day(s)</span>
+                                </div>
+                                
+                                <hr />
+
+                                <div class="d-flex justify-content-between mb-2 small">
+                                    <span>Daily Rate</span>
+                                    <span>@Model.DailyRate.ToString("C")</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Rental Fee (@Model.RentalDays days)</span>
+                                    <span>@Model.RentalAmount.ToString("C")</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Security Deposit <i class="bi bi-info-circle text-muted" title="Refundable upon safe return"></i></span>
+                                    <span>@Model.SecurityDeposit.ToString("C")</span>
+                                </div>
+                                
+                                <hr />
+                                
+                                <div class="d-flex justify-content-between fw-bold fs-5 text-primary">
+                                    <span>Total Estimation</span>
+                                    <span>@Model.TotalAmount.ToString("C")</span>
+                                </div>
+                                <div class="small text-muted text-end mt-1">
+                                    Payment is not required until the vendor approves.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terms & Submit -->
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" asp-for="TermsAccepted">
+                                    <label class="form-check-label small" asp-for="TermsAccepted">
+                                        I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Rental Terms and Conditions</a>. I understand that I am responsible for returning the equipment in its original condition.
+                                    </label>
+                                    <span asp-validation-for="TermsAccepted" class="text-danger d-block mt-1"></span>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg fw-bold" id="confirmBtn">Confirm & Request Rental</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">Back to Edit Dates</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="termsModalLabel">Rental Terms and Conditions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body small">
+        <h6>1. Payment and Deposit</h6>
+        <p>A security deposit is required for all rentals. This deposit will be refunded in full upon return of the equipment in undamaged and clean condition.</p>
+        
+        <h6>2. Care and Use</h6>
+        <p>The renter agrees to use the equipment only for its intended purpose and in a careful, prudent manner. The renter is responsible for any damage, loss, or theft of the equipment during the rental period.</p>
+        
+        <h6>3. Pick-up and Return</h6>
+        <p>Equipment must be picked up and returned to the specified location during normal business hours. Late returns may be subject to additional daily charges.</p>
+        
+        <h6>4. Cancellations</h6>
+        <p>Bookings can be cancelled up to 24 hours before the rental start date for a full refund. Later cancellations may forfeit the security deposit or a portion of the rental fee.</p>
+        
+        <h6>5. Liability</h6>
+        <p>The vendor is not responsible for any personal injury, property damage, or other loss resulting from the use of the rented equipment.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            $('#confirmForm').submit(function() {
+                if ($(this).valid()) {
+                    var btn = $('#confirmBtn');
+                    btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...');
+                    btn.prop('disabled', true);
+                }
+            });
+        });
+    </script>
+}

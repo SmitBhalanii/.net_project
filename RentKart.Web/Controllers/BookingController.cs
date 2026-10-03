@@ -8,6 +8,8 @@ using RentKart.Core.Entities;
 using RentKart.Core.Interfaces;
 using RentKart.Web.ViewModels.Booking;
 
+using Microsoft.AspNetCore.Identity;
+
 namespace RentKart.Web.Controllers;
 
 [Authorize(Roles = "Customer")]
@@ -15,11 +17,16 @@ public class BookingController : Controller
 {
     private readonly IBookingService _bookingService;
     private readonly IEquipmentService _equipmentService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public BookingController(IBookingService bookingService, IEquipmentService equipmentService)
+    public BookingController(
+        IBookingService bookingService, 
+        IEquipmentService equipmentService,
+        UserManager<ApplicationUser> userManager)
     {
         _bookingService = bookingService;
         _equipmentService = equipmentService;
+        _userManager = userManager;
     }
 
     [HttpGet]
@@ -82,6 +89,81 @@ public class BookingController : Controller
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return Unauthorized();
+
+        var equipmentObj = await _equipmentService.GetEquipmentByIdAsync(model.EquipmentId);
+        if (equipmentObj == null || !equipmentObj.IsActive || equipmentObj.Business.ApprovalStatus != Core.Enums.BusinessApprovalStatus.Approved)
+        {
+            return NotFound("Equipment not found or unavailable.");
+        }
+
+        try
+        {
+            var isAvailable = await _bookingService.IsEquipmentAvailableAsync(model.EquipmentId, model.StartDate, model.EndDate);
+            if (!isAvailable)
+            {
+                ModelState.AddModelError(string.Empty, "Equipment is not available for the selected dates.");
+                model.EquipmentName = equipmentObj.Name;
+                model.BusinessName = equipmentObj.Business.BusinessName;
+                model.DailyRate = equipmentObj.RentalPrice;
+                model.SecurityDeposit = equipmentObj.SecurityDeposit;
+                return View(model);
+            }
+
+            int rentalDays = (model.EndDate - model.StartDate).Days + 1;
+            decimal rentalAmount = rentalDays * equipmentObj.RentalPrice;
+
+            var summary = new BookingSummaryViewModel
+            {
+                EquipmentId = equipmentObj.Id,
+                EquipmentName = equipmentObj.Name,
+                EquipmentImageUrl = equipmentObj.EquipmentImages?.FirstOrDefault()?.ImagePath ?? "",
+                BusinessName = equipmentObj.Business.BusinessName,
+                PickupLocation = $"{equipmentObj.Business.Address}, {equipmentObj.Business.City}",
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                RentalDays = rentalDays,
+                DailyRate = equipmentObj.RentalPrice,
+                RentalAmount = rentalAmount,
+                SecurityDeposit = equipmentObj.SecurityDeposit,
+                TotalAmount = rentalAmount + equipmentObj.SecurityDeposit,
+                CustomerName = $"{user.FirstName} {user.LastName}",
+                CustomerEmail = user.Email ?? "",
+                CustomerPhone = user.PhoneNumber ?? "",
+                CustomerNote = model.CustomerNote ?? "",
+                TermsAccepted = false
+            };
+
+            return View("Summary", summary);
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            model.EquipmentName = equipmentObj.Name;
+            model.BusinessName = equipmentObj.Business.BusinessName;
+            model.DailyRate = equipmentObj.RentalPrice;
+            model.SecurityDeposit = equipmentObj.SecurityDeposit;
+            return View(model);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Confirm(BookingSummaryViewModel model)
+    {
+        if (!ModelState.IsValid || !model.TermsAccepted)
+        {
+            if (!model.TermsAccepted)
+            {
+                ModelState.AddModelError("TermsAccepted", "You must accept the rental terms.");
+            }
+            return View("Summary", model);
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
         try
         {
             var booking = new Booking
@@ -101,18 +183,7 @@ public class BookingController : Controller
         catch (InvalidOperationException ex)
         {
             ModelState.AddModelError(string.Empty, ex.Message);
-            
-            // Reload info
-            var equipment = await _equipmentService.GetEquipmentByIdAsync(model.EquipmentId);
-            if (equipment != null)
-            {
-                model.EquipmentName = equipment.Name;
-                model.BusinessName = equipment.Business.BusinessName;
-                model.DailyRate = equipment.RentalPrice;
-                model.SecurityDeposit = equipment.SecurityDeposit;
-            }
-            
-            return View(model);
+            return View("Summary", model);
         }
     }
 
