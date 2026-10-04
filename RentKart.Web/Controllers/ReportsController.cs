@@ -45,6 +45,7 @@ public class ReportsController : Controller
         try
         {
             var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(vendorId)) return Unauthorized();
             var business = await _businessService.GetBusinessByUserIdAsync(vendorId);
             if (business == null)
             {
@@ -70,6 +71,7 @@ public class ReportsController : Controller
         try
         {
             var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(customerId)) return Unauthorized();
 
             var report = await _reportingService.GetCustomerStatisticsAsync(customerId);
             return View(report);

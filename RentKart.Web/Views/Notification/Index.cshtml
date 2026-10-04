@@ -116,7 +116,7 @@
 @section Scripts {
     <script>
         function markAsRead(id) {
-            fetch(/Notification/MarkAsRead/, {
+            fetch(`/Notification/MarkAsRead/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -124,8 +124,7 @@
                 }
             }).then(response => {
                 if (response.ok) {
-                    var el = document.getElementById(
-otification-);
+                    var el = document.getElementById(`notification-${id}`);
                     if (el) {
                         el.classList.remove('list-group-item-light', 'border-primary', 'bg-primary', 'bg-opacity-10');
                         var markReadBtn = el.querySelector('button[onclick^="markAsRead"]');
@@ -144,10 +143,11 @@ otification-);
 
         function markAsReadAndNavigate(e, id, url) {
             e.preventDefault();
-            fetch(/Notification/MarkAsRead/, {
+            fetch(`/Notification/MarkAsRead/${id}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
                 }
             }).then(() => {
                 window.location.href = url;

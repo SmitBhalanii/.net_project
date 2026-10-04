@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<RentKart.Core.Interfaces.ICategoryService, RentKart.Infrastructure.Services.CategoryService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IEquipmentService, RentKart.Infrastructure.Services.EquipmentService>();

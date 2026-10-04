@@ -136,7 +136,7 @@ public class EquipmentController : Controller
             Name = equipment.Name,
             Brand = equipment.Brand,
             Model = equipment.Model,
-            Description = equipment.Description,
+            Description = equipment.Description ?? string.Empty,
             RentalPrice = equipment.RentalPrice,
             RentalPeriod = equipment.RentalPeriod,
             SecurityDeposit = equipment.SecurityDeposit,

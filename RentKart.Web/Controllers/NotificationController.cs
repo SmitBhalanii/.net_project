@@ -51,6 +51,7 @@ public class NotificationController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkAsRead(int id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -62,6 +63,7 @@ public class NotificationController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkAllAsRead()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -73,6 +75,7 @@ public class NotificationController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
