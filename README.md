@@ -1,38 +1,55 @@
 # RentKart
+## Rent Anything You Need.
 
-**Rent Anything You Need.**
+RentKart is a local multi-vendor peer-to-peer rental marketplace built with ASP.NET Core MVC. 
 
-RentKart is a local rental marketplace connecting customers with nearby rental businesses. 
+## Overview
+RentKart allows multiple rental businesses to register, list equipment, and manage their rental operations. Customers can browse local vendors, search for equipment, create bookings, and securely pay online. The MVP focuses on local pickup and return.
 
-## Current Development Status
-- **Phase 0:** Project Constitution & Architecture established.
-- **Phase 1:** Solution foundation and ASP.NET Core MVC project structure scaffolding complete. (Current)
+## Features
+- Multi-Vendor Support
+- Role-Based Access (Admin, Vendor, Staff, Customer)
+- Real-time Equipment Availability
+- Booking & Security Deposit Management
+- Rental Lifecycle Tracking (Issue, Return, Damage)
+- Real-time Notifications (SignalR)
+- Analytics & Reports
 
 ## Technology Stack
-- C# 13, .NET 9.0 (SDK 10.0.401 installed)
-- ASP.NET Core MVC
-- Entity Framework Core with SQL Server
-- Bootstrap 5
+- **Backend**: ASP.NET Core 10.0 MVC, C#
+- **Database**: Entity Framework Core, SQL Server
+- **Frontend**: Bootstrap 5, Javascript, Chart.js
+- **Real-time**: SignalR
+
+## Architecture
+See [ARCHITECTURE.md](docs/ARCHITECTURE.md)
+
+## Database
+See [DATABASE.md](docs/DATABASE.md)
 
 ## Project Structure
-- `RentKart.Web`: Presentation layer
-- `RentKart.Infrastructure`: Data access and configurations
-- `RentKart.Core`: Domain models
-- `RentKart.Tests`: xUnit tests
+- `RentKart.Core`: Domain entities and interfaces.
+- `RentKart.Infrastructure`: EF Core DbContext and Services.
+- `RentKart.Web`: Controllers, Views, and Web Host.
+- `RentKart.Tests`: Unit tests.
 
 ## How to Run
-1. Install .NET SDK
-2. Open terminal in `RentKart` directory
-3. Run `dotnet restore`
-4. Run `dotnet build`
-5. Run `dotnet run --project RentKart.Web`
+1. Configure `ConnectionStrings:DefaultConnection` in `appsettings.json` or user secrets.
+2. Run database migrations: `dotnet ef database update`
+3. Run the application: `dotnet run`
 
-## Database Prerequisites
-- SQL Server (LocalDB configured by default in `appsettings.json`)
-- No schema has been created yet.
+## Demo Data
+DEMO ACCOUNTS (Development/Demo Only):
+- SuperAdmin: admin@rentkart.com
+- VendorAdmin: vendor@rentkart.com
+- Customer: customer@rentkart.com
 
-## Documentation
-- [Architecture](ARCHITECTURE.md)
-- [Project Constitution](PROJECT_CONSTITUTION.md)
+## Future Scope (RentKart V2)
+- AI Equipment Recommendations
+- Mobile Application
+- GPS Equipment Tracking
+- Vendor Commission System
+- Home Delivery
 
-*Note: This project is being developed in phases.*
+## Authors
+Smit Bhalani & Team
