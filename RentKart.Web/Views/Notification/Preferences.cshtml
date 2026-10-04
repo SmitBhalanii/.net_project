@@ -1,0 +1,73 @@
+@model RentKart.Core.Entities.NotificationPreference
+
+@{
+    ViewData["Title"] = "Notification Preferences";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">Notification Preferences</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+
+                    <form asp-action="Preferences" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-4">
+                            <h5>Booking & Payment Updates</h5>
+                            <p class="text-muted small">Get notified about booking confirmations, cancellations, and payment statuses.</p>
+                            
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" asp-for="BookingUpdates">
+                                <label class="form-check-label" asp-for="BookingUpdates">Booking Updates</label>
+                            </div>
+                            
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="PaymentUpdates">
+                                <label class="form-check-label" asp-for="PaymentUpdates">Payment Updates</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Rental Operations</h5>
+                            <p class="text-muted small">Get notified about rental startups, returns, and overdue reminders.</p>
+                            
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="RentalReminders">
+                                <label class="form-check-label" asp-for="RentalReminders">Rental Reminders</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Feedback & Marketing</h5>
+                            
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" asp-for="ReviewReminders">
+                                <label class="form-check-label" asp-for="ReviewReminders">Review Reminders</label>
+                            </div>
+                            
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="MarketingPromotional">
+                                <label class="form-check-label" asp-for="MarketingPromotional">Marketing & Promotions</label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary">Back to Notifications</a>
+                            <button type="submit" class="btn btn-primary">Save Preferences</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

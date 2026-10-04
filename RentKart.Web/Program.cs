@@ -20,6 +20,7 @@ builder.Services.AddScoped<RentKart.Core.Interfaces.IFileService, RentKart.Web.S
 builder.Services.AddScoped<RentKart.Core.Interfaces.IReviewService, RentKart.Infrastructure.Services.ReviewService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IWishlistService, RentKart.Infrastructure.Services.WishlistService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.INotificationService, RentKart.Infrastructure.Services.NotificationService>();
+builder.Services.AddScoped<RentKart.Core.Interfaces.IEmailService, RentKart.Infrastructure.Services.EmailService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IReportingService, RentKart.Infrastructure.Services.ReportingService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IAuditLogService, RentKart.Infrastructure.Services.AuditLogService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IPlatformSettingsService, RentKart.Infrastructure.Services.PlatformSettingsService>();
@@ -27,6 +28,10 @@ builder.Services.AddScoped<RentKart.Core.Interfaces.IUserManagementService, Rent
 builder.Services.AddScoped<RentKart.Core.Interfaces.IReportManagementService, RentKart.Infrastructure.Services.ReportManagementService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IEquipmentSearchService, RentKart.Infrastructure.Services.EquipmentSearchService>();
 builder.Services.AddScoped<RentKart.Core.Interfaces.IRefundService, RentKart.Infrastructure.Services.RefundService>();
+
+builder.Services.AddScoped<RentKart.Core.Interfaces.IRealTimeNotifier, RentKart.Web.Services.RealTimeNotifier>();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -97,5 +102,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.MapHub<RentKart.Web.Hubs.NotificationHub>("/notificationHub");
 
 app.Run();
+

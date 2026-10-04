@@ -70,9 +70,10 @@ public class RefundService : IRefundService
             payment.CustomerId,
             NotificationType.System,
             "Refund Processed",
-            $"A refund of ?{amount:N2} has been processed for your booking.",
+            $"A refund of ₹{amount:N2} has been processed for your booking.",
             "Payment",
-            payment.Id.ToString()
+            payment.Id.ToString(),
+            $"/CustomerFinancial"
         );
 
         return refund;

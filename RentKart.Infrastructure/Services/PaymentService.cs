@@ -166,7 +166,8 @@ public class PaymentService : IPaymentService
                 "Payment Successful",
                 $"Payment of ₹{amount:N2} for booking {booking.BookingNumber} was successful.",
                 "Payment",
-                payment.Id.ToString());
+                payment.Id.ToString(),
+                $"/Booking/Details/{bookingId}");
         }
         else
         {
@@ -176,7 +177,8 @@ public class PaymentService : IPaymentService
                 "Payment Failed",
                 $"Your payment for booking {booking.BookingNumber} was unsuccessful. You can try again.",
                 "Payment",
-                payment.Id.ToString());
+                payment.Id.ToString(),
+                $"/Booking/Details/{bookingId}");
         }
 
         return payment;

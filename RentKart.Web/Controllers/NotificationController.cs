@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RentKart.Core.Entities;
 using RentKart.Core.Interfaces;
 using RentKart.Web.ViewModels.Notification;
 
@@ -18,12 +19,12 @@ public class NotificationController : Controller
         _notificationService = notificationService;
     }
 
-    public async Task<IActionResult> Index(int page = 1)
+    public async Task<IActionResult> Index(int page = 1, bool unreadOnly = false)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userId)) return Challenge();
 
-        var notifications = await _notificationService.GetUserNotificationsAsync(userId, page, 20);
+        var notifications = await _notificationService.GetUserNotificationsAsync(userId, page, 20, unreadOnly);
         var unreadCount = await _notificationService.GetUnreadCountAsync(userId);
 
         var viewModel = new NotificationListViewModel
@@ -37,11 +38,15 @@ public class NotificationController : Controller
                 Message = n.Message,
                 RelatedEntityType = n.RelatedEntityType,
                 RelatedEntityId = n.RelatedEntityId,
+                ActionUrl = n.ActionUrl,
                 IsRead = n.IsRead,
                 CreatedAt = n.CreatedAt
             })
         };
 
+        ViewData["UnreadOnly"] = unreadOnly;
+        ViewData["CurrentPage"] = page;
+        
         return View(viewModel);
     }
 
@@ -76,5 +81,29 @@ public class NotificationController : Controller
         await _notificationService.DeleteAsync(userId, id);
 
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Preferences()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return Challenge();
+
+        var prefs = await _notificationService.GetPreferencesAsync(userId);
+        return View(prefs);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Preferences(NotificationPreference model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return Challenge();
+
+        model.UserId = userId;
+        await _notificationService.UpdatePreferencesAsync(model);
+
+        TempData["SuccessMessage"] = "Notification preferences updated successfully.";
+        return RedirectToAction(nameof(Preferences));
     }
 }

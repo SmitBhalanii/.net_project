@@ -74,13 +74,14 @@ public class BookingService : IBookingService
         _context.Bookings.Add(booking);
         await _context.SaveChangesAsync();
 
-        await _notificationService.CreateNotificationAsync(
-            booking.CustomerId,
-            NotificationType.BookingCreated,
-            "Booking Request Sent",
-            $"Your booking {booking.BookingNumber} has been sent to {equipment.Business.BusinessName}.",
-            "Booking",
-            booking.Id.ToString());
+            await _notificationService.CreateNotificationAsync(
+                booking.CustomerId,
+                NotificationType.BookingCreated,
+                "Booking Request Sent",
+                $"Your booking {booking.BookingNumber} has been sent to {equipment.Business.BusinessName}.",
+                "Booking",
+                booking.Id.ToString(),
+                $"/Booking/Details/{booking.Id}");
 
         // Notify Business Admin
         await _notificationService.CreateNotificationAsync(
@@ -89,7 +90,8 @@ public class BookingService : IBookingService
             "New Booking Request",
             $"New booking request {booking.BookingNumber} received for {equipment.Name}.",
             "Booking",
-            booking.Id.ToString());
+            booking.Id.ToString(),
+            "/BusinessBooking");
 
         return booking;
     }
@@ -187,7 +189,8 @@ public class BookingService : IBookingService
                 "Booking Approved",
                 $"Your booking {booking.BookingNumber} has been approved by {equipment.Business.BusinessName}.",
                 "Booking",
-                booking.Id.ToString());
+                booking.Id.ToString(),
+                $"/Booking/Details/{booking.Id}");
 
             await _notificationService.CreateNotificationAsync(
                 booking.CustomerId,
@@ -195,7 +198,8 @@ public class BookingService : IBookingService
                 "Payment Required",
                 $"Your booking {booking.BookingNumber} is approved. Please complete payment to confirm your rental.",
                 "Booking",
-                booking.Id.ToString());
+                booking.Id.ToString(),
+                $"/Booking/Details/{booking.Id}");
         }
 
         return true;
@@ -233,7 +237,8 @@ public class BookingService : IBookingService
                 "Booking Rejected",
                 message,
                 "Booking",
-                booking.Id.ToString());
+                booking.Id.ToString(),
+                $"/Booking/Details/{booking.Id}");
         }
 
         return true;
@@ -268,7 +273,8 @@ public class BookingService : IBookingService
             "Booking Cancelled",
             $"Your booking {booking.BookingNumber} has been cancelled.",
             "Booking",
-            booking.Id.ToString());
+            booking.Id.ToString(),
+            $"/Booking/Details/{booking.Id}");
 
         var equipment = await _context.Equipment.Include(e => e.Business).FirstOrDefaultAsync(e => e.Id == booking.EquipmentId);
         if (equipment != null)
@@ -279,7 +285,8 @@ public class BookingService : IBookingService
                 "Booking Cancelled",
                 $"Booking {booking.BookingNumber} has been cancelled by the customer.",
                 "Booking",
-                booking.Id.ToString());
+                booking.Id.ToString(),
+                "/BusinessBooking");
         }
 
         return true;

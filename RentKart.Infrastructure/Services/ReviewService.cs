@@ -50,7 +50,7 @@ public class ReviewService : IReviewService
             "Review Submitted",
             "Your review has been submitted successfully. It will appear after approval.",
             "Review",
-            review.Id.ToString());
+            review.Id.ToString(), "/Review/MyReviews");
             
         return review;
     }
@@ -144,7 +144,7 @@ public class ReviewService : IReviewService
                     "Review Published",
                     $"Your review for {reviewWithIncludes.Equipment.Name} has been published.",
                     "Review",
-                    reviewWithIncludes.Id.ToString());
+                    reviewWithIncludes.Id.ToString(), "/Review/MyReviews");
             }
             else if (status == ReviewStatus.Rejected)
             {
@@ -154,10 +154,11 @@ public class ReviewService : IReviewService
                     "Review Not Published",
                     $"Your review for {reviewWithIncludes.Equipment.Name} was not published as it violated our guidelines.",
                     "Review",
-                    reviewWithIncludes.Id.ToString());
+                    reviewWithIncludes.Id.ToString(), "/Review/MyReviews");
             }
         }
         
         return true;
     }
 }
+

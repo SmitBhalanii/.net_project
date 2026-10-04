@@ -115,7 +115,7 @@ public class RentalService : IRentalService
                 "Ready for Pickup",
                 $"Your {equipment.Name} is ready for pickup at {equipment.Business.BusinessName}.",
                 "Booking",
-                booking.Id.ToString());
+                booking.Id.ToString(), $"/Booking/Details/{booking.Id}");
         }
 
         return rental;
@@ -160,7 +160,7 @@ public class RentalService : IRentalService
                 "Equipment Issued",
                 $"{equipment.Name} has been successfully issued to you. Rental is now active.",
                 "Rental",
-                rental.Id.ToString());
+                rental.Id.ToString(), $"/Rental/Details/{rental.Id}");
                 
             await _notificationService.CreateNotificationAsync(
                 rental.CustomerId,
@@ -168,7 +168,7 @@ public class RentalService : IRentalService
                 "Rental Started",
                 $"Your rental for {equipment.Name} has started. Expected return: {rental.ExpectedReturnDate:dd MMM yyyy}",
                 "Rental",
-                rental.Id.ToString());
+                rental.Id.ToString(), $"/Rental/Details/{rental.Id}");
         }
 
         return rental;
@@ -228,7 +228,7 @@ public class RentalService : IRentalService
                 "Equipment Returned",
                 $"{equipment.Name} has been successfully returned.",
                 "Rental",
-                rental.Id.ToString());
+                rental.Id.ToString(), $"/Rental/Details/{rental.Id}");
                 
             if (!damageFound)
             {
@@ -238,7 +238,7 @@ public class RentalService : IRentalService
                     "Rental Completed",
                     $"Your rental of {equipment.Name} has been completed. You can now leave a review.",
                     "Rental",
-                    rental.Id.ToString());
+                    rental.Id.ToString(), $"/Rental/Details/{rental.Id}");
             }
             else
             {
@@ -248,7 +248,7 @@ public class RentalService : IRentalService
                     "Damage Reported",
                     $"Damage was reported during the return of {equipment.Name}. We will review it shortly.",
                     "Rental",
-                    rental.Id.ToString());
+                    rental.Id.ToString(), $"/Rental/Details/{rental.Id}");
             }
         }
 
@@ -313,7 +313,7 @@ public class RentalService : IRentalService
                         "Rental Due Tomorrow",
                         $"Your {rental.Equipment.Name} rental is due tomorrow. Please return it to {rental.Business.BusinessName} on time.",
                         "Rental",
-                        rental.Id.ToString());
+                        rental.Id.ToString(), $"/Rental/Details/{rental.Id}");
                 }
             }
             else if (today > expectedDate)
@@ -337,7 +337,7 @@ public class RentalService : IRentalService
                         "Rental Overdue",
                         $"Your {rental.Equipment.Name} rental is overdue by {daysOverdue} days. Please return the equipment to {rental.Business.BusinessName}.",
                         "Rental",
-                        rental.Id.ToString());
+                        rental.Id.ToString(), $"/Rental/Details/{rental.Id}");
                         
                     await _notificationService.CreateNotificationAsync(
                         rental.Business.UserId,
@@ -345,9 +345,10 @@ public class RentalService : IRentalService
                         "Rental Overdue",
                         $"{rental.Equipment.Name} rental is overdue by {daysOverdue} days.",
                         "Rental",
-                        rental.Id.ToString());
+                        rental.Id.ToString(), $"/Rental/Details/{rental.Id}");
                 }
             }
         }
     }
 }
+

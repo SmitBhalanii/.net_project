@@ -49,7 +49,7 @@ namespace RentKart.Tests.Services
                 var booking = new Booking 
                 { 
                     Id = 1, BusinessId = 1, EquipmentId = 1, CustomerId = "c1", 
-                    Status = BookingStatus.Completed, CreatedAt = DateTime.UtcNow, TotalAmount = 1000 
+                    Status = BookingStatus.Completed, PaymentStatus = PaymentStatus.Succeeded, RentalAmount = 1000, CreatedAt = DateTime.UtcNow 
                 };
                 context.Bookings.Add(booking);
                 
@@ -73,7 +73,7 @@ namespace RentKart.Tests.Services
                 Assert.Equal(1, result.TotalCustomers);
                 Assert.Equal(1, result.TotalEquipment);
                 Assert.Equal(1, result.TotalBookings);
-                Assert.Equal(1000, result.TotalRevenue);
+                Assert.Equal(1000, result.TotalRentalRevenue);
                 Assert.Single(result.BookingStatusDistribution);
                 Assert.Equal("Completed", result.BookingStatusDistribution[0].Status);
             }
@@ -96,8 +96,8 @@ namespace RentKart.Tests.Services
                 var eq2 = new Equipment { Id = 2, BusinessId = 2, Name = "E2", Brand = "B", City = "C", Model = "M", PostalCode = "P", State = "S", Description = "D", CategoryId = 1 };
                 context.Equipment.AddRange(eq1, eq2);
                 
-                var booking1 = new Booking { Id = 1, BusinessId = 1, EquipmentId = 1, CustomerId = "c1", Status = BookingStatus.Completed, CreatedAt = DateTime.UtcNow };
-                var booking2 = new Booking { Id = 2, BusinessId = 2, EquipmentId = 2, CustomerId = "c1", Status = BookingStatus.Completed, CreatedAt = DateTime.UtcNow };
+                var booking1 = new Booking { Id = 1, BusinessId = 1, EquipmentId = 1, CustomerId = "c1", Status = BookingStatus.Completed, PaymentStatus = PaymentStatus.Succeeded, RentalAmount = 1000, CreatedAt = DateTime.UtcNow };
+                var booking2 = new Booking { Id = 2, BusinessId = 2, EquipmentId = 2, CustomerId = "c1", Status = BookingStatus.Completed, PaymentStatus = PaymentStatus.Succeeded, RentalAmount = 2000, CreatedAt = DateTime.UtcNow };
                 context.Bookings.AddRange(booking1, booking2);
 
                 var payment1 = new Payment { Id = 1, BookingId = 1, CustomerId = "c1", Amount = 1000, PaymentStatus = PaymentStatus.Succeeded, CreatedAt = DateTime.UtcNow };
@@ -114,13 +114,13 @@ namespace RentKart.Tests.Services
 
                 Assert.Equal(1, resultB1.TotalEquipment);
                 Assert.Equal(1, resultB1.TotalBookings);
-                Assert.Equal(1000, resultB1.TotalRevenue);
+                Assert.Equal(1000, resultB1.GrossRentalRevenue);
                 
                 var resultB2 = await service.GetBusinessDashboardAsync(2, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1));
 
                 Assert.Equal(1, resultB2.TotalEquipment);
                 Assert.Equal(1, resultB2.TotalBookings);
-                Assert.Equal(2000, resultB2.TotalRevenue);
+                Assert.Equal(2000, resultB2.GrossRentalRevenue);
             }
         }
         
@@ -140,8 +140,8 @@ namespace RentKart.Tests.Services
                 var eq1 = new Equipment { Id = 1, BusinessId = 1, Name = "E1", Brand = "B", City = "C", Model = "M", PostalCode = "P", State = "S", Description = "D", CategoryId = 1 };
                 context.Equipment.Add(eq1);
                 
-                var booking1 = new Booking { Id = 1, BusinessId = 1, EquipmentId = 1, CustomerId = "c1", Status = BookingStatus.Completed, CreatedAt = DateTime.UtcNow };
-                var booking2 = new Booking { Id = 2, BusinessId = 1, EquipmentId = 1, CustomerId = "c2", Status = BookingStatus.Completed, CreatedAt = DateTime.UtcNow };
+                var booking1 = new Booking { Id = 1, BusinessId = 1, EquipmentId = 1, CustomerId = "c1", Status = BookingStatus.Completed, PaymentStatus = PaymentStatus.Succeeded, RentalAmount = 1000, CreatedAt = DateTime.UtcNow };
+                var booking2 = new Booking { Id = 2, BusinessId = 1, EquipmentId = 1, CustomerId = "c2", Status = BookingStatus.Completed, PaymentStatus = PaymentStatus.Succeeded, RentalAmount = 2000, CreatedAt = DateTime.UtcNow };
                 context.Bookings.AddRange(booking1, booking2);
 
                 var payment1 = new Payment { Id = 1, BookingId = 1, CustomerId = "c1", Amount = 1000, PaymentStatus = PaymentStatus.Succeeded, CreatedAt = DateTime.UtcNow };
@@ -157,11 +157,11 @@ namespace RentKart.Tests.Services
                 
                 var resultC1 = await service.GetCustomerStatisticsAsync("c1");
                 Assert.Equal(1, resultC1.TotalBookings);
-                Assert.Equal(1000, resultC1.TotalSpent);
+                Assert.Equal(1000, resultC1.TotalRentalSpending);
 
                 var resultC2 = await service.GetCustomerStatisticsAsync("c2");
                 Assert.Equal(1, resultC2.TotalBookings);
-                Assert.Equal(2000, resultC2.TotalSpent);
+                Assert.Equal(2000, resultC2.TotalRentalSpending);
             }
         }
 
@@ -171,10 +171,10 @@ namespace RentKart.Tests.Services
             var dbName = Guid.NewGuid().ToString();
             using (var context = GetContext(dbName))
             {
-                var payment1 = new Payment { Id = 1, BookingId = 1, CustomerId = "c1", Amount = 1000, PaymentStatus = PaymentStatus.Succeeded, CreatedAt = DateTime.UtcNow };
-                var payment2 = new Payment { Id = 2, BookingId = 1, CustomerId = "c1", Amount = 2000, PaymentStatus = PaymentStatus.Failed, CreatedAt = DateTime.UtcNow };
-                var payment3 = new Payment { Id = 3, BookingId = 1, CustomerId = "c1", Amount = 3000, PaymentStatus = PaymentStatus.Pending, CreatedAt = DateTime.UtcNow };
-                context.Payments.AddRange(payment1, payment2, payment3);
+                var b1 = new Booking { Id = 1, BusinessId = 1, EquipmentId = 1, CustomerId = "c1", Status = BookingStatus.Completed, PaymentStatus = PaymentStatus.Succeeded, RentalAmount = 1000, CreatedAt = DateTime.UtcNow };
+                var b2 = new Booking { Id = 2, BusinessId = 1, EquipmentId = 1, CustomerId = "c1", Status = BookingStatus.Completed, PaymentStatus = PaymentStatus.Failed, RentalAmount = 2000, CreatedAt = DateTime.UtcNow };
+                var b3 = new Booking { Id = 3, BusinessId = 1, EquipmentId = 1, CustomerId = "c1", Status = BookingStatus.Completed, PaymentStatus = PaymentStatus.Pending, RentalAmount = 3000, CreatedAt = DateTime.UtcNow };
+                context.Bookings.AddRange(b1, b2, b3);
 
                 await context.SaveChangesAsync();
             }
@@ -184,7 +184,7 @@ namespace RentKart.Tests.Services
                 var service = new ReportingService(context);
                 var result = await service.GetAdminDashboardAsync(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1));
 
-                Assert.Equal(1000, result.TotalRevenue);
+                Assert.Equal(1000, result.TotalRentalRevenue);
             }
         }
 
@@ -209,8 +209,13 @@ namespace RentKart.Tests.Services
                 var result = await service.GetAdminDashboardAsync(DateTime.UtcNow.AddDays(-5), DateTime.UtcNow);
 
                 Assert.Equal(0, result.TotalBookings);
-                Assert.Equal(0, result.TotalRevenue);
+                Assert.Equal(0, result.TotalRentalRevenue);
             }
         }
     }
 }
+
+
+
+
+

@@ -17,6 +17,7 @@ public class Notification
     
     public string? RelatedEntityType { get; set; }
     public string? RelatedEntityId { get; set; }
+    public string? ActionUrl { get; set; }
     
     public bool IsRead { get; set; }
     
