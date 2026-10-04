@@ -4,49 +4,149 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    <style>
+        .login-wrapper {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            background-color: #f8f9fa;
+            margin: -16px; /* Negate main container padding */
+        }
+        
+        .login-banner {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(255, 56, 92, 0.95) 0%, rgba(255, 107, 107, 0.95) 100%), url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80') center/cover;
+            color: white;
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-banner::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            transform: translate(30%, 30%);
+        }
+
+        .login-form-container {
+            flex: 1;
+            padding: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+
+        .login-form-card {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .form-header h2 {
+            color: #2b3445;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-floating > .form-control {
+            border-radius: 12px;
+            border: 1px solid #e3e9ef;
+            background-color: #f6f9fc;
+        }
+
+        .form-floating > .form-control:focus {
+            border-color: #ff385c;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(255, 56, 92, 0.1);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #ff385c 0%, #ff6b6b 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            padding: 14px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 56, 92, 0.3);
+            color: white;
+        }
+
+        @@media (max-width: 992px) {
+            .login-wrapper { flex-direction: column; }
+            .login-banner { padding: 3rem 2rem; min-height: 300px; }
+            .login-form-container { padding: 3rem 1.5rem; }
+        }
+    </style>
 }
 
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <i class="bi bi-box-seam auth-logo"></i>
-            <h2 class="auth-title">Welcome Back</h2>
+<div class="login-wrapper">
+    <div class="login-banner d-none d-lg-flex">
+        <div class="position-relative z-index-1">
+            <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 1.5rem;">Welcome Back to RentKart</h1>
+            <p style="font-size: 1.2rem; opacity: 0.9; line-height: 1.6;">
+                Sign in to manage your rentals, chat with providers, and discover what's new in your neighborhood.
+            </p>
         </div>
-        <form id="account" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
-            
-            <div class="form-floating mb-3">
-                <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Email" class="form-label">Email address</label>
-                <span asp-validation-for="Email" class="text-danger small"></span>
+    </div>
+
+    <div class="login-form-container">
+        <div class="login-form-card">
+            <div class="form-header text-center mb-5">
+                <i class="bi bi-box-seam text-primary mb-3 d-inline-block" style="font-size: 3rem;"></i>
+                <h2>Sign In</h2>
+                <p class="text-muted">Enter your details to access your account</p>
             </div>
             
-            <div class="form-floating mb-3">
-                <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                <label asp-for="Password" class="form-label">Password</label>
-                <span asp-validation-for="Password" class="text-danger small"></span>
-            </div>
-            
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="form-check">
-                    <input class="form-check-input" asp-for="RememberMe" />
-                    <label asp-for="RememberMe" class="form-check-label text-muted">Remember Me</label>
+            <form id="account" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+                
+                <div class="form-floating mb-3">
+                    <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label asp-for="Email">Email address</label>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
-                <a href="#" class="text-decoration-none small text-primary">Forgot Password?</a>
-            </div>
-            
-            <button id="login-submit" type="submit" class="btn btn-primary w-100 py-2 mb-4">Log in</button>
-            
-            <div class="auth-divider">
-                <span>Don't have an account?</span>
-            </div>
-            
-            <div class="d-flex gap-2">
-                <a asp-action="RegisterCustomer" class="btn btn-outline-primary w-50">Create Account</a>
-                <a asp-action="RegisterBusiness" class="btn btn-outline-primary w-50">List Business</a>
-            </div>
-        </form>
+                
+                <div class="form-floating mb-3">
+                    <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" type="password" />
+                    <label asp-for="Password">Password</label>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" asp-for="RememberMe" />
+                        <label asp-for="RememberMe" class="form-check-label text-muted small">Remember Me</label>
+                    </div>
+                    <a href="#" class="text-decoration-none small text-primary fw-semibold">Forgot Password?</a>
+                </div>
+                
+                <button id="login-submit" type="submit" class="w-100 btn btn-login mb-4">Sign In</button>
+                
+                <div class="position-relative mb-4 text-center">
+                    <hr class="text-muted opacity-25">
+                    <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">New to RentKart?</span>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    <a asp-action="RegisterCustomer" class="btn btn-outline-secondary w-50 rounded-pill fw-semibold shadow-sm">I'm a Customer</a>
+                    <a asp-action="RegisterBusiness" class="btn btn-outline-secondary w-50 rounded-pill fw-semibold shadow-sm">I'm a Business</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

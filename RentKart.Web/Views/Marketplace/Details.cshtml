@@ -5,15 +5,18 @@
 
 <div class="container mt-4 mb-5">
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index">Marketplace</a></li>
-            <li class="breadcrumb-item"><a asp-action="Index" asp-route-categoryId="@Model.CategoryId">@Model.Category.Name</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        <ol class="breadcrumb bg-transparent p-0 mb-3">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none text-muted">Marketplace</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="text-decoration-none text-muted">@Model.Category.Name</a></li>
+            <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">@Model.Name</li>
         </ol>
     </nav>
     
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>@Model.Name</h2>
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="fw-bold mb-2">@Model.Name</h1>
+            <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1"></i> @Model.City, @Model.State</p>
+        </div>
         @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
         {
             @if (ViewBag.IsInWishlist)
@@ -21,8 +24,8 @@
                 <form asp-controller="Wishlist" asp-action="Remove" method="post" class="m-0">
                     <input type="hidden" name="equipmentId" value="@Model.Id" />
                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <button type="submit" class="btn btn-outline-danger">
-                        <i class="bi bi-heart-fill"></i> Remove from Wishlist
+                    <button type="submit" class="btn btn-outline-danger px-4 rounded-pill">
+                        <i class="bi bi-heart-fill"></i> Saved
                     </button>
                 </form>
             }
@@ -31,8 +34,8 @@
                 <form asp-controller="Wishlist" asp-action="Add" method="post" class="m-0">
                     <input type="hidden" name="equipmentId" value="@Model.Id" />
                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <button type="submit" class="btn btn-outline-danger">
-                        <i class="bi bi-heart"></i> Add to Wishlist
+                    <button type="submit" class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
+                        <i class="bi bi-heart"></i> Save
                     </button>
                 </form>
             }
@@ -44,8 +47,8 @@
             @if (Model.EquipmentImages != null && Model.EquipmentImages.Any())
             {
                 var primaryImage = Model.EquipmentImages.FirstOrDefault(img => img.IsPrimary) ?? Model.EquipmentImages.First();
-                <div class="mb-3">
-                    <img src="@primaryImage.ImagePath" class="img-fluid rounded shadow-sm w-100" alt="@Model.Name" style="max-height: 500px; object-fit: cover;">
+                <div class="mb-3 rk-card border-0">
+                    <img src="@primaryImage.ImagePath" class="img-fluid w-100" alt="@Model.Name" style="max-height: 500px; object-fit: cover;">
                 </div>
                 
                 @if (Model.EquipmentImages.Count > 1)
@@ -53,43 +56,43 @@
                     <div class="d-flex gap-2 overflow-auto py-2">
                         @foreach (var img in Model.EquipmentImages)
                         {
-                            <img src="@img.ImagePath" class="img-thumbnail rounded" alt="Thumbnail" style="height: 80px; width: 120px; object-fit: cover; cursor: pointer;">
+                            <img src="@img.ImagePath" class="img-thumbnail border-0 rounded" alt="Thumbnail" style="height: 100px; width: 140px; object-fit: cover; cursor: pointer;">
                         }
                     </div>
                 }
             }
             else
             {
-                <div class="bg-light text-center d-flex align-items-center justify-content-center rounded" style="height: 400px;">
-                    <h3 class="text-muted">No Images Available</h3>
+                <div class="bg-light text-center d-flex align-items-center justify-content-center rk-card border-0" style="height: 400px;">
+                    <i class="bi bi-camera text-muted fs-1 d-block mb-2"></i>
                 </div>
             }
 
-            <div class="mt-5">
-                <h4 class="mb-3">Description</h4>
-                <p style="white-space: pre-line;">@Model.Description</p>
+            <div class="mt-5 pb-4 border-bottom">
+                <h4 class="fw-bold mb-3">Description</h4>
+                <p class="text-secondary" style="white-space: pre-line; font-size: 1.05rem; line-height: 1.6;">@Model.Description</p>
             </div>
             
-            <div class="mt-5">
-                <h4 class="mb-3">Specifications</h4>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between px-0">
-                        <span class="text-muted">Brand</span>
-                        <strong>@Model.Brand</strong>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between px-0">
-                        <span class="text-muted">Model</span>
-                        <strong>@Model.Model</strong>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between px-0">
-                        <span class="text-muted">Condition</span>
-                        <strong>@Model.Condition.ToString()</strong>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between px-0">
-                        <span class="text-muted">Available Quantity</span>
-                        <strong>@Model.Quantity</strong>
-                    </li>
-                </ul>
+            <div class="mt-4 pb-4 border-bottom">
+                <h4 class="fw-bold mb-3">Specifications</h4>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-muted small text-uppercase fw-bold mb-1">Brand</div>
+                        <div class="fw-semibold">@Model.Brand</div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-muted small text-uppercase fw-bold mb-1">Model</div>
+                        <div class="fw-semibold">@Model.Model</div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-muted small text-uppercase fw-bold mb-1">Condition</div>
+                        <div class="fw-semibold">@Model.Condition.ToString()</div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="text-muted small text-uppercase fw-bold mb-1">Available Quantity</div>
+                        <div class="fw-semibold">@Model.Quantity</div>
+                    </div>
+                </div>
             </div>
 
             <div class="mt-5">
@@ -170,51 +173,52 @@
         </div>
 
         <div class="col-md-5">
-            <div class="card shadow-sm sticky-top" style="top: 2rem;">
-                <div class="card-body p-4">
-                    <h2 class="card-title text-primary mb-1">@Model.RentalPrice.ToString("C") <small class="text-muted fs-5">/ @Model.RentalPeriod</small></h2>
+            <div class="rk-card sticky-top" style="top: 2rem;">
+                <div class="rk-card-body p-4">
+                    <h2 class="fw-bold text-dark mb-1">@Model.RentalPrice.ToString("C") <span class="text-muted fw-normal fs-5">/ @Model.RentalPeriod</span></h2>
                     <p class="text-muted small mb-4">Security Deposit: @Model.SecurityDeposit.ToString("C")</p>
                     
-                    <div class="d-grid gap-2 mb-4">
+                    <div class="d-grid gap-3 mb-4">
                         @if (Model.IsActive)
                         {
-                            <a asp-controller="Booking" asp-action="Create" asp-route-equipmentId="@Model.Id" class="btn btn-primary btn-lg fw-bold shadow">Rent Now</a>
+                            <a asp-controller="Booking" asp-action="Create" asp-route-equipmentId="@Model.Id" class="btn btn-primary btn-lg fw-bold">Request Rental</a>
                         }
                         else
                         {
-                            <button class="btn btn-primary btn-lg" disabled>Currently Unavailable</button>
+                            <button class="btn btn-secondary btn-lg" disabled>Currently Unavailable</button>
                         }
+                        <button class="btn btn-outline-primary btn-lg fw-bold">Contact Owner</button>
                     </div>
                     
-                    <hr class="my-4" />
+                    <hr class="my-4" style="border-color: var(--rk-border);" />
                     
-                    <h5 class="mb-3">Provider Information</h5>
-                    <div class="d-flex align-items-center mb-3">
+                    <h5 class="fw-bold mb-3">Owner Information</h5>
+                    <div class="d-flex align-items-center mb-4">
                         @if (!string.IsNullOrEmpty(Model.Business.LogoPath))
                         {
-                            <img src="@Model.Business.LogoPath" class="rounded-circle me-3 border" style="width: 50px; height: 50px; object-fit: cover;" alt="@Model.Business.BusinessName">
+                            <img src="@Model.Business.LogoPath" class="rounded-circle me-3 border" style="width: 56px; height: 56px; object-fit: cover;" alt="@Model.Business.BusinessName">
                         }
                         else
                         {
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                            <div class="bg-light text-secondary rounded-circle d-flex align-items-center justify-content-center me-3 border" style="width: 56px; height: 56px; font-size: 1.5rem; font-weight: 600;">
                                 @Model.Business.BusinessName.Substring(0, 1).ToUpper()
                             </div>
                         }
                         <div>
-                            <h6 class="mb-0">@Model.Business.BusinessName</h6>
-                            <small class="text-muted"><i class="bi bi-geo-alt"></i> @Model.City, @Model.State</small>
+                            <h6 class="mb-1 fw-bold fs-5">@Model.Business.BusinessName</h6>
+                            <small class="text-muted">Joined @Model.Business.CreatedAt.Year</small>
                         </div>
                     </div>
                     
-                    <div class="bg-light p-3 rounded mb-3">
-                        <h6 class="mb-2">Pickup Location</h6>
-                        <address class="mb-0 small text-muted">
+                    <div class="p-3 bg-light rounded-3 mb-4 border">
+                        <h6 class="fw-bold mb-2 small text-uppercase text-muted">Pickup Location</h6>
+                        <address class="mb-0 text-dark">
                             @Model.Business.Address<br />
                             @Model.Business.City, @Model.Business.State @Model.Business.PostalCode
                         </address>
                     </div>
 
-                    <a asp-controller="Business" asp-action="Details" asp-route-id="@Model.BusinessId" class="btn btn-outline-secondary w-100">View Business Profile</a>
+                    <a asp-controller="Business" asp-action="Details" asp-route-id="@Model.BusinessId" class="text-center d-block fw-semibold text-decoration-none">View Business Profile</a>
                 </div>
             </div>
         </div>

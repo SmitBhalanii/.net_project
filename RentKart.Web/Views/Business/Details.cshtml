@@ -64,8 +64,8 @@
                 <h4 class="fw-bold mb-4">Business Ratings & Reviews</h4>
                 @if (ViewBag.ReviewCount > 0)
                 {
-                    <div class="card bg-light mb-4 shadow-sm border-0">
-                        <div class="card-body">
+                    <div class="rk-card bg-light border-0 mb-4">
+                        <div class="rk-card-body">
                             <div class="row align-items-center">
                                 <div class="col-md-4 text-center border-end">
                                     <h1 class="display-4 fw-bold mb-0">@ViewBag.AverageRating.ToString("0.0")</h1>
@@ -107,8 +107,8 @@
                     <div class="review-list">
                         @foreach (var review in (IEnumerable<RentKart.Core.Entities.Review>)ViewBag.Reviews)
                         {
-                            <div class="card mb-3 border-0 shadow-sm">
-                                <div class="card-body">
+                            <div class="rk-card mb-3 border-0">
+                                <div class="rk-card-body">
                                     <div class="d-flex justify-content-between mb-2">
                                         <div>
                                             <h6 class="mb-0 fw-bold">@review.Customer.FirstName @review.Customer.LastName.Substring(0, 1).</h6>
@@ -163,8 +163,8 @@
         </div>
         
         <div class="col-md-4">
-            <div class="card shadow-sm border-0 sticky-top" style="top: 2rem;">
-                <div class="card-body p-4">
+            <div class="rk-card sticky-top" style="top: 2rem;">
+                <div class="rk-card-body p-4">
                     <h5 class="fw-bold mb-4">Contact Information</h5>
                     
                     <ul class="list-unstyled mb-0">

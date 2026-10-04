@@ -1,7 +1,7 @@
 @model RentKart.Web.ViewModels.Business.BusinessCardViewModel
 
-<div class="card h-100 shadow-sm border-0">
-    <div class="card-body text-center p-4">
+<div class="rk-card h-100 d-flex flex-column">
+    <div class="rk-card-body text-center p-4 flex-grow-1">
         @if (!string.IsNullOrEmpty(Model.LogoPath))
         {
             <img src="@Model.LogoPath" alt="@Model.BusinessName" class="rounded-circle mb-3 border" style="width: 80px; height: 80px; object-fit: cover;">
@@ -12,7 +12,7 @@
                 @Model.BusinessName.Substring(0, 1).ToUpper()
             </div>
         }
-        <h5 class="card-title fw-bold mb-1">@Model.BusinessName</h5>
+        <h4 class="rk-card-title mt-2 mb-1">@Model.BusinessName</h4>
         <p class="text-muted small mb-2"><i class="bi bi-geo-alt"></i> @Model.City, @Model.State</p>
         
         @if (Model.IsApproved)
@@ -22,14 +22,14 @@
             </div>
         }
 
-        <p class="card-text text-muted small text-truncate-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+        <p class="rk-card-subtitle text-truncate-2 mt-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
             @(string.IsNullOrEmpty(Model.Description) ? "Professional rental business." : Model.Description)
         </p>
     </div>
-    <div class="card-footer bg-white border-top-0 pt-0 pb-4 px-4 text-center">
-        <div class="d-flex justify-content-between align-items-center mb-3 text-muted small">
-            <span><i class="bi bi-box-seam"></i> @Model.EquipmentCount Listings</span>
+    <div class="bg-white border-top-0 pt-0 pb-4 px-4 text-center mt-auto">
+        <div class="d-flex justify-content-center align-items-center mb-3 text-muted small fw-bold">
+            <span class="bg-light px-3 py-1 rounded-pill"><i class="bi bi-box-seam text-primary"></i> @Model.EquipmentCount Listings</span>
         </div>
-        <a asp-controller="Business" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-primary w-100">View Business</a>
+        <a asp-controller="Business" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-primary w-100 rounded-pill fw-bold">View Business</a>
     </div>
 </div>

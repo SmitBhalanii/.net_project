@@ -10,8 +10,12 @@
     @await RenderSectionAsync("Styles", required: false)
     <link rel="stylesheet" href="~/RentKart.Web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="app-shell">
     <header>
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container">
@@ -47,11 +51,11 @@
         </nav>
     </header>
 
-    <main role="main" class="pb-3">
+    <main role="main" class="main-content pb-3">
         @RenderBody()
     </main>
 
-    <footer class="footer mt-auto">
+    <footer class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
@@ -141,5 +145,6 @@
         </script>
     }
     @await RenderSectionAsync("Scripts", required: false)
+    </div>
 </body>
 </html>

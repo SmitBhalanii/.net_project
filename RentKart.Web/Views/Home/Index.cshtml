@@ -3,31 +3,42 @@
     ViewData["Title"] = "Home Page";
 }
 
-<!-- Hero Section -->
-<section class="hero-section text-center">
-    <div class="container">
-        <h1 class="hero-title">Rent Anything You Need.<br />Nearby.</h1>
-        <p class="hero-subtitle mx-auto" style="max-width: 600px;">
-            Discover equipment, tools, electronics, event gear and more from rental businesses and owners near you.
+<section class="hero-section text-center position-relative overflow-hidden" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 100px 0 120px;">
+    <!-- Abstract shapes -->
+    <div class="position-absolute top-0 start-0 translate-middle" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(255, 56, 92, 0.1) 0%, rgba(255, 56, 92, 0) 70%); border-radius: 50%;"></div>
+    <div class="position-absolute bottom-0 end-0 translate-middle-x" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(0, 166, 153, 0.1) 0%, rgba(0, 166, 153, 0) 70%); border-radius: 50%;"></div>
+    
+    <div class="container position-relative z-index-1">
+        <span class="badge bg-white text-primary px-3 py-2 rounded-pill shadow-sm mb-4 fw-bold">The #1 Local Rental Marketplace</span>
+        <h1 class="hero-title mb-4" style="font-size: 4rem; font-weight: 800; letter-spacing: -1px; color: #1a1a1a;">Rent Anything You Need.<br /><span class="text-primary">Nearby.</span></h1>
+        <p class="hero-subtitle mx-auto mb-5 fs-5 text-muted" style="max-width: 650px; line-height: 1.6;">
+            Discover equipment, tools, electronics, event gear and more from trusted rental businesses and local owners near you.
         </p>
         
         <!-- Search -->
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8">
-                <form asp-controller="Marketplace" asp-action="Search" method="get" class="search-bar bg-white mx-auto">
-                    <input type="text" name="SearchTerm" class="search-input" placeholder="What are you looking for?" />
-                    <div class="search-divider d-none d-md-block"></div>
-                    <input type="text" name="Location" class="search-input d-none d-md-block" placeholder="Location" />
-                    <div class="search-divider d-none d-md-block"></div>
-                    <input type="date" name="StartDate" class="search-input d-none d-md-block" placeholder="Dates" />
-                    <button type="submit" class="btn btn-primary search-btn"><i class="bi bi-search me-2"></i>Search</button>
+                <form asp-controller="Marketplace" asp-action="Search" method="get" class="search-bar bg-white mx-auto p-2 rounded-pill shadow-lg d-flex align-items-center" style="border: 1px solid rgba(0,0,0,0.05);">
+                    <div class="flex-grow-1 px-3 border-end">
+                        <label class="small text-muted fw-bold d-block text-start mb-0">What</label>
+                        <input type="text" name="SearchTerm" class="form-control border-0 p-0 shadow-none bg-transparent fw-semibold" placeholder="Equipment, tools..." />
+                    </div>
+                    <div class="flex-grow-1 px-3 border-end d-none d-md-block">
+                        <label class="small text-muted fw-bold d-block text-start mb-0">Where</label>
+                        <input type="text" name="Location" class="form-control border-0 p-0 shadow-none bg-transparent fw-semibold" placeholder="City or Zip" />
+                    </div>
+                    <div class="px-2">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-3 fw-bold d-flex align-items-center gap-2">
+                            <i class="bi bi-search"></i> <span class="d-none d-sm-inline">Search</span>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
         
-        <div>
-            <a asp-controller="Marketplace" asp-action="Search" class="btn btn-primary btn-lg px-4 me-3 rounded-pill shadow-sm">Explore Rentals</a>
-            <a asp-controller="Account" asp-action="RegisterBusiness" class="btn btn-outline-primary btn-lg px-4 bg-white rounded-pill shadow-sm">List Your Equipment</a>
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Marketplace" asp-action="Search" class="btn btn-primary btn-lg px-4 rounded-pill shadow-sm fw-bold">Browse Rentals</a>
+            <a asp-controller="Account" asp-action="RegisterBusiness" class="btn btn-white bg-white btn-lg px-4 rounded-pill shadow-sm fw-bold text-dark border">List Your Equipment</a>
         </div>
     </div>
 </section>
@@ -48,11 +59,14 @@
 </section>
 
 <!-- Featured Rentals -->
-<section id="browse" class="py-5">
-    <div class="container">
+<section id="browse" class="py-5 bg-light">
+    <div class="container pt-4 pb-2">
         <div class="d-flex justify-content-between align-items-end mb-4">
-            <h3 class="fw-bold mb-0">Featured Rentals Near You</h3>
-            <a asp-controller="Marketplace" asp-action="Index" class="text-primary text-decoration-none fw-semibold">View All <i class="bi bi-arrow-right"></i></a>
+            <div>
+                <h2 class="fw-bold mb-1" style="letter-spacing: -0.5px;">Trending Near You</h2>
+                <p class="text-muted mb-0">Discover what's popular in your neighborhood.</p>
+            </div>
+            <a asp-controller="Marketplace" asp-action="Index" class="btn btn-outline-secondary rounded-pill fw-semibold shadow-sm bg-white">View All <i class="bi bi-arrow-right"></i></a>
         </div>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             @foreach (var equipment in Model.FeaturedEquipment)
@@ -66,11 +80,14 @@
 </section>
 
 <!-- Popular Rental Businesses -->
-<section id="businesses" class="py-5 bg-light">
-    <div class="container">
+<section id="businesses" class="py-5">
+    <div class="container pt-4 pb-2">
         <div class="d-flex justify-content-between align-items-end mb-4">
-            <h3 class="fw-bold mb-0">Popular Rental Businesses</h3>
-            <a asp-controller="Business" asp-action="Index" class="text-primary text-decoration-none fw-semibold">View All Businesses <i class="bi bi-arrow-right"></i></a>
+            <div>
+                <h2 class="fw-bold mb-1" style="letter-spacing: -0.5px;">Top Rental Providers</h2>
+                <p class="text-muted mb-0">Highly rated businesses ready to serve you.</p>
+            </div>
+            <a asp-controller="Business" asp-action="Index" class="btn btn-outline-secondary rounded-pill fw-semibold shadow-sm">View Businesses <i class="bi bi-arrow-right"></i></a>
         </div>
         @if (Model.PopularBusinesses.Any())
         {
@@ -85,55 +102,55 @@
         }
         else
         {
-            <div class="text-center py-5 bg-white rounded shadow-sm">
-                <i class="bi bi-shop text-muted mb-3 d-block" style="font-size: 2.5rem;"></i>
-                <h5 class="text-muted">No businesses listed yet.</h5>
-                <p class="text-muted small">Be the first to create a rental business profile on RentKart!</p>
+            <div class="text-center py-5 bg-light rounded-4 shadow-sm border">
+                <i class="bi bi-shop text-muted mb-3 d-block" style="font-size: 3rem;"></i>
+                <h4 class="fw-bold">No businesses listed yet</h4>
+                <p class="text-muted">Be the first to create a rental business profile on RentKart!</p>
             </div>
         }
     </div>
 </section>
 
 <!-- How RentKart Works -->
-<section id="how-it-works" class="py-5 bg-white">
-    <div class="container">
-        <h3 class="text-center fw-bold mb-5">How RentKart Works</h3>
+<section id="how-it-works" class="py-5 bg-light">
+    <div class="container py-5">
+        <h2 class="text-center fw-bold mb-5" style="letter-spacing: -0.5px;">How RentKart Works</h2>
         <div class="row text-center g-4">
             <div class="col-md-3">
-                <div class="mb-3">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
-                        <i class="bi bi-search text-primary fs-1"></i>
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-white shadow-sm rounded-circle" style="width: 80px; height: 80px;">
+                        <i class="bi bi-search fs-1" style="color: var(--rk-primary);"></i>
                     </div>
                 </div>
                 <h5 class="fw-bold">1. Search</h5>
-                <p class="text-muted">Find exactly what you need in your area.</p>
+                <p class="text-muted px-2">Find exactly what you need in your local area.</p>
             </div>
             <div class="col-md-3">
-                <div class="mb-3">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
-                        <i class="bi bi-ui-checks-grid text-primary fs-1"></i>
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-white shadow-sm rounded-circle" style="width: 80px; height: 80px;">
+                        <i class="bi bi-ui-checks-grid fs-1" style="color: var(--rk-primary);"></i>
                     </div>
                 </div>
                 <h5 class="fw-bold">2. Compare</h5>
-                <p class="text-muted">Explore nearby rental options and prices.</p>
+                <p class="text-muted px-2">Explore nearby options and check transparent pricing.</p>
             </div>
             <div class="col-md-3">
-                <div class="mb-3">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
-                        <i class="bi bi-chat-dots text-primary fs-1"></i>
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-white shadow-sm rounded-circle" style="width: 80px; height: 80px;">
+                        <i class="bi bi-chat-dots fs-1" style="color: var(--rk-primary);"></i>
                     </div>
                 </div>
                 <h5 class="fw-bold">3. Connect</h5>
-                <p class="text-muted">Choose a provider and request the rental.</p>
+                <p class="text-muted px-2">Choose a provider and request the rental instantly.</p>
             </div>
             <div class="col-md-3">
-                <div class="mb-3">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
-                        <i class="bi bi-arrow-repeat text-primary fs-1"></i>
+                <div class="mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-white shadow-sm rounded-circle" style="width: 80px; height: 80px;">
+                        <i class="bi bi-arrow-repeat fs-1" style="color: var(--rk-primary);"></i>
                     </div>
                 </div>
                 <h5 class="fw-bold">4. Rent & Return</h5>
-                <p class="text-muted">Meet locally, collect and return equipment.</p>
+                <p class="text-muted px-2">Meet locally, collect the gear, and return when done.</p>
             </div>
         </div>
     </div>
@@ -185,13 +202,13 @@
 </section>
 
 <!-- Business CTA -->
-<section class="py-5 bg-white border-top">
-    <div class="container text-center py-4">
-        <h2 class="fw-bold mb-3">Have Equipment to Rent?</h2>
-        <h4 class="text-muted mb-4">Turn Your Assets Into Income.</h4>
-        <p class="mx-auto text-muted mb-4" style="max-width: 600px;">
-            Create your rental business profile, list your equipment and connect with customers nearby. Join the growing RentKart community.
+<section class="py-5" style="background-color: var(--rk-primary); color: white;">
+    <div class="container text-center py-5">
+        <h2 class="fw-bold mb-3 text-white" style="font-size: 2.5rem; letter-spacing: -0.5px;">Have Equipment to Rent?</h2>
+        <h4 class="mb-4 opacity-75 fw-normal">Turn Your Idle Assets Into Income.</h4>
+        <p class="mx-auto mb-4" style="max-width: 600px; font-size: 1.1rem; opacity: 0.9;">
+            Create your rental business profile, list your equipment and connect with customers nearby. Join the growing RentKart community today.
         </p>
-        <a asp-controller="Account" asp-action="RegisterBusiness" class="btn btn-primary btn-lg rounded-pill px-5 shadow">Join RentKart</a>
+        <a asp-controller="Account" asp-action="RegisterBusiness" class="btn btn-light text-primary btn-lg rounded-pill px-5 shadow-sm fw-bold mt-2">Start Earning Now</a>
     </div>
 </section>
