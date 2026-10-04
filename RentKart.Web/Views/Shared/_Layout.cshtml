@@ -15,136 +15,137 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-shell">
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light">
-            <div class="container">
-                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-box-seam me-2" style="font-size: 1.5rem; color: var(--rk-primary);"></i>
-                    RentKart
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Marketplace" asp-action="Index">Browse Rentals</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Business" asp-action="Index">Businesses</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index" fragment="categories">Categories</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index" fragment="how-it-works">How It Works</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <main role="main" class="main-content pb-3">
-        @RenderBody()
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <a class="navbar-brand d-flex align-items-center mb-3" asp-area="" asp-controller="Home" asp-action="Index">
+    <div class="rk-app">
+        <header class="rk-header">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <div class="container">
+                    <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
                         <i class="bi bi-box-seam me-2" style="font-size: 1.5rem; color: var(--rk-primary);"></i>
                         RentKart
                     </a>
-                    <p class="text-muted">Rent Anything You Need. A local rental marketplace connecting people with nearby businesses and equipment owners.</p>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Marketplace" asp-action="Index">Browse Rentals</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Business" asp-action="Index">Businesses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index" fragment="categories">Categories</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index" fragment="how-it-works">How It Works</a>
+                            </li>
+                        </ul>
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
-                <div class="col-md-2 mb-4">
-                    <h5 class="footer-heading">Marketplace</h5>
-                    <a href="#browse" class="footer-link">Browse Rentals</a>
-                    <a href="#categories" class="footer-link">Categories</a>
-                    <a href="#how-it-works" class="footer-link">How It Works</a>
+            </nav>
+        </header>
+
+        <main role="main" class="rk-main">
+            @RenderBody()
+        </main>
+
+        <footer class="rk-footer">
+            <div class="rk-footer-inner">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <a class="navbar-brand d-flex align-items-center mb-3" asp-area="" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-box-seam me-2" style="font-size: 1.5rem; color: var(--rk-primary);"></i>
+                            RentKart
+                        </a>
+                        <p class="text-muted">Rent Anything You Need. A local rental marketplace connecting people with nearby businesses and equipment owners.</p>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <h5 class="footer-heading fs-6">Marketplace</h5>
+                        <a href="#browse" class="footer-link">Browse Rentals</a>
+                        <a href="#categories" class="footer-link">Categories</a>
+                        <a href="#how-it-works" class="footer-link">How It Works</a>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <h5 class="footer-heading fs-6">For Businesses</h5>
+                        <a asp-controller="Account" asp-action="RegisterBusiness" class="footer-link">List Equipment</a>
+                        <a asp-controller="Account" asp-action="RegisterBusiness" class="footer-link">Business Registration</a>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <h5 class="footer-heading fs-6">Support</h5>
+                        <a href="#" class="footer-link">Help</a>
+                        <a href="#" class="footer-link">Contact</a>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <h5 class="footer-heading fs-6">Legal</h5>
+                        <a href="#" class="footer-link">Privacy</a>
+                        <a href="#" class="footer-link">Terms</a>
+                    </div>
                 </div>
-                <div class="col-md-2 mb-4">
-                    <h5 class="footer-heading">For Businesses</h5>
-                    <a asp-controller="Account" asp-action="RegisterBusiness" class="footer-link">List Equipment</a>
-                    <a asp-controller="Account" asp-action="RegisterBusiness" class="footer-link">Business Registration</a>
-                </div>
-                <div class="col-md-2 mb-4">
-                    <h5 class="footer-heading">Support</h5>
-                    <a href="#" class="footer-link">Help</a>
-                    <a href="#" class="footer-link">Contact</a>
-                </div>
-                <div class="col-md-2 mb-4">
-                    <h5 class="footer-heading">Legal</h5>
-                    <a href="#" class="footer-link">Privacy</a>
-                    <a href="#" class="footer-link">Terms</a>
+                <hr class="mt-2 mb-3" style="border-color: var(--rk-border);">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p class="text-muted mb-0 small">&copy; 2026 RentKart. All rights reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <a href="#" class="text-muted me-3"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-muted me-3"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-instagram"></i></a>
+                    </div>
                 </div>
             </div>
-            <hr class="mt-4 mb-4" style="border-color: var(--rk-border);">
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="text-muted mb-0">&copy; 2026 RentKart. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-muted me-3"><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="text-muted me-3"><i class="bi bi-twitter-x"></i></a>
-                    <a href="#" class="text-muted"><i class="bi bi-instagram"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @if (User.Identity != null && User.Identity.IsAuthenticated)
-    {
-        <script>
-            const connection = new signalR.HubConnectionBuilder()
-                .withUrl("/notificationHub")
-                .build();
+        </footer>
 
-            connection.on("ReceiveNotification", function (data) {
-                // We can show a toast or simply update the bell
-            });
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <script>
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/notificationHub")
+                    .build();
 
-            connection.on("UpdateUnreadCount", function (count) {
-                const badge = document.getElementById('header-unread-badge');
-                const countSpan = document.getElementById('header-unread-count');
-                if (badge && countSpan) {
-                    if (count > 0) {
-                        badge.style.display = 'inline-block';
-                        countSpan.innerText = count;
-                    } else {
-                        badge.style.display = 'none';
-                        countSpan.innerText = '0';
+                connection.on("ReceiveNotification", function (data) {
+                    // We can show a toast or simply update the bell
+                });
+
+                connection.on("UpdateUnreadCount", function (count) {
+                    const badge = document.getElementById('header-unread-badge');
+                    const countSpan = document.getElementById('header-unread-count');
+                    if (badge && countSpan) {
+                        if (count > 0) {
+                            badge.style.display = 'inline-block';
+                            countSpan.innerText = count;
+                        } else {
+                            badge.style.display = 'none';
+                            countSpan.innerText = '0';
+                        }
                     }
-                }
-                
-                // If on notification center, update there too
-                const centerBadge = document.getElementById('unread-count-badge');
-                if (centerBadge) {
-                    if (count > 0) {
-                        centerBadge.innerText = count + ' Unread';
-                    } else {
-                        centerBadge.innerText = '0 Unread';
+                    
+                    // If on notification center, update there too
+                    const centerBadge = document.getElementById('unread-count-badge');
+                    if (centerBadge) {
+                        if (count > 0) {
+                            centerBadge.innerText = count + ' Unread';
+                        } else {
+                            centerBadge.innerText = '0 Unread';
+                        }
                     }
-                }
-            });
+                });
 
-            connection.start().catch(function (err) {
-                console.error(err.toString());
-            });
-        </script>
-    }
-    @await RenderSectionAsync("Scripts", required: false)
+                connection.start().catch(function (err) {
+                    console.error(err.toString());
+                });
+            </script>
+        }
+        @await RenderSectionAsync("Scripts", required: false)
     </div>
 </body>
 </html>

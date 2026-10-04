@@ -33,14 +33,35 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-.app-shell {
+.rk-app {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-.main-content {
-    flex: 1;
+.rk-main {
+    flex: 1 0 auto;
+    width: 100%;
+}
+
+.rk-header {
+    flex-shrink: 0;
+    width: 100%;
+}
+
+.rk-footer {
+    flex-shrink: 0;
+    position: static;
+    width: 100%;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    padding: 40px 0 20px;
+}
+
+.rk-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
 }
 
 /* Typography */
@@ -211,12 +232,6 @@ a:hover {
 }
 
 /* Footer */
-.footer {
-    background-color: var(--rk-surface);
-    border-top: 1px solid var(--rk-border);
-    padding: 60px 0 30px;
-    margin-top: auto;
-}
 .footer-heading {
     font-weight: 600;
     margin-bottom: 20px;

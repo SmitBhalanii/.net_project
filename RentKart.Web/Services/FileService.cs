@@ -20,7 +20,8 @@ public class FileService : IFileService
         if (fileStream == null || fileStream.Length == 0)
             throw new ArgumentException("File stream is empty or null.");
 
-        var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", folderName);
+        var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+        var uploadsFolder = Path.Combine(webRoot, "uploads", folderName);
         if (!Directory.Exists(uploadsFolder))
         {
             Directory.CreateDirectory(uploadsFolder);
@@ -41,7 +42,8 @@ public class FileService : IFileService
     {
         if (string.IsNullOrWhiteSpace(filePath)) return;
         
-        var physicalPath = Path.Combine(_env.WebRootPath, filePath.TrimStart('/'));
+        var webRoot = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+        var physicalPath = Path.Combine(webRoot, filePath.TrimStart('/'));
         if (File.Exists(physicalPath))
         {
             File.Delete(physicalPath);

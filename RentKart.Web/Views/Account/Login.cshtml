@@ -5,15 +5,15 @@
 
 @section Styles {
     <style>
-        .login-wrapper {
-            display: flex;
-            min-height: calc(100vh - 80px);
+        .login-page {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            min-height: calc(100vh - 72px - 200px); /* rough estimation to fill screen */
             background-color: #f8f9fa;
-            margin: -16px; /* Negate main container padding */
         }
         
         .login-banner {
-            flex: 1;
             background: linear-gradient(135deg, rgba(255, 56, 92, 0.95) 0%, rgba(255, 107, 107, 0.95) 100%), url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80') center/cover;
             color: white;
             padding: 4rem;
@@ -37,17 +37,21 @@
         }
 
         .login-form-container {
-            flex: 1;
-            padding: 4rem;
+            padding: 40px 24px;
             display: flex;
-            align-items: center;
-            justify-content: center;
             background: white;
+            min-height: 100%;
         }
 
         .login-form-card {
             width: 100%;
-            max-width: 450px;
+            max-width: 460px;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eaeaea;
+            margin: auto;
         }
 
         .form-header h2 {
@@ -86,19 +90,28 @@
         }
 
         @@media (max-width: 992px) {
-            .login-wrapper { flex-direction: column; }
-            .login-banner { padding: 3rem 2rem; min-height: 300px; }
-            .login-form-container { padding: 3rem 1.5rem; }
+            .login-page {
+                grid-template-columns: 1fr;
+            }
+            .login-banner {
+                padding: 3rem 2rem;
+                min-height: 250px;
+            }
+            .login-form-card {
+                padding: 30px 20px;
+                box-shadow: none;
+                border: none;
+            }
         }
     </style>
 }
 
-<div class="login-wrapper">
+<div class="login-page">
     <div class="login-banner d-none d-lg-flex">
         <div class="position-relative z-index-1">
-            <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 1.5rem;">Welcome Back to RentKart</h1>
+            <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 1.5rem;">Welcome Back</h1>
             <p style="font-size: 1.2rem; opacity: 0.9; line-height: 1.6;">
-                Sign in to manage your rentals, chat with providers, and discover what's new in your neighborhood.
+                Find what you need.<br />Rent it nearby.
             </p>
         </div>
     </div>
@@ -106,7 +119,7 @@
     <div class="login-form-container">
         <div class="login-form-card">
             <div class="form-header text-center mb-5">
-                <i class="bi bi-box-seam text-primary mb-3 d-inline-block" style="font-size: 3rem;"></i>
+                <i class="bi bi-box-seam text-primary mb-3 d-inline-block" style="font-size: 2.5rem;"></i>
                 <h2>Sign In</h2>
                 <p class="text-muted">Enter your details to access your account</p>
             </div>
@@ -120,7 +133,7 @@
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
                 
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-4">
                     <input asp-for="Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" type="password" />
                     <label asp-for="Password">Password</label>
                     <span asp-validation-for="Password" class="text-danger small"></span>
@@ -129,21 +142,21 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="form-check">
                         <input class="form-check-input" asp-for="RememberMe" />
-                        <label asp-for="RememberMe" class="form-check-label text-muted small">Remember Me</label>
+                        <label asp-for="RememberMe" class="form-check-label text-muted small">Remember me</label>
                     </div>
-                    <a href="#" class="text-decoration-none small text-primary fw-semibold">Forgot Password?</a>
+                    <a href="#" class="text-decoration-none small text-primary fw-semibold">Forgot password?</a>
                 </div>
                 
-                <button id="login-submit" type="submit" class="w-100 btn btn-login mb-4">Sign In</button>
+                <button id="login-submit" type="submit" class="w-100 btn btn-login mb-4">Log In</button>
                 
                 <div class="position-relative mb-4 text-center">
                     <hr class="text-muted opacity-25">
-                    <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">New to RentKart?</span>
+                    <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">Don't have an account?</span>
                 </div>
                 
-                <div class="d-flex gap-3">
-                    <a asp-action="RegisterCustomer" class="btn btn-outline-secondary w-50 rounded-pill fw-semibold shadow-sm">I'm a Customer</a>
-                    <a asp-action="RegisterBusiness" class="btn btn-outline-secondary w-50 rounded-pill fw-semibold shadow-sm">I'm a Business</a>
+                <div class="d-grid gap-2">
+                    <a asp-action="RegisterCustomer" class="btn btn-outline-secondary rounded-pill fw-semibold shadow-sm w-100">Create Customer Account</a>
+                    <a asp-action="RegisterBusiness" class="btn btn-outline-secondary rounded-pill fw-semibold shadow-sm w-100">List Your Business</a>
                 </div>
             </form>
         </div>

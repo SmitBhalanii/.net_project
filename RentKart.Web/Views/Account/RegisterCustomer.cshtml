@@ -6,10 +6,10 @@
 @section Styles {
     <style>
         .customer-reg-wrapper {
-            display: flex;
-            min-height: calc(100vh - 80px);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: calc(100vh - 72px - 200px);
             background-color: #f8f9fa;
-            margin: -16px; /* Negate main container padding */
         }
         
         .reg-banner {
@@ -82,17 +82,15 @@
         }
 
         .reg-form-container {
-            flex: 1.2;
-            padding: 4rem;
+            padding: 40px 24px;
             display: flex;
-            align-items: center;
-            justify-content: center;
             background: white;
         }
 
         .reg-form-card {
             width: 100%;
             max-width: 500px;
+            margin: auto;
         }
 
         .form-header {
@@ -148,7 +146,7 @@
 
         @@media (max-width: 992px) {
             .customer-reg-wrapper {
-                flex-direction: column;
+                grid-template-columns: 1fr;
             }
             .reg-banner {
                 padding: 3rem 2rem;
