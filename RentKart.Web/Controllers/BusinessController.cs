@@ -54,7 +54,12 @@ public class BusinessController : Controller
     public async Task<IActionResult> Details(int id)
     {
         var business = await _businessService.GetBusinessProfileAsync(id);
-        if (business == null || (!User.IsInRole("Admin") && business.ApprovalStatus != RentKart.Core.Enums.BusinessApprovalStatus.Approved))
+        
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        bool isOwner = currentUserId != null && business?.UserId == currentUserId;
+        bool isAdmin = User.IsInRole("Admin");
+        
+        if (business == null || (!isAdmin && !isOwner && business.ApprovalStatus != RentKart.Core.Enums.BusinessApprovalStatus.Approved))
         {
             return NotFound();
         }
