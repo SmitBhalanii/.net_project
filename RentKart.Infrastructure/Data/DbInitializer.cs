@@ -66,6 +66,8 @@ public static class DbInitializer
         }
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         
+        await dbContext.Database.MigrateAsync();
+        
         if (!dbContext.Categories.Any())
         {
             var categories = new Category[]

@@ -148,7 +148,7 @@ public class AccountController : Controller
                         State = model.State,
                         PostalCode = model.PostalCode,
                         Description = model.Description,
-                        ApprovalStatus = BusinessApprovalStatus.Pending,
+                        ApprovalStatus = BusinessApprovalStatus.Approved,
                         IsActive = true,
                         CreatedAt = DateTime.UtcNow
                     };

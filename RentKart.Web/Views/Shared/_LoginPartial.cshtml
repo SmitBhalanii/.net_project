@@ -11,15 +11,15 @@
     <li class="nav-item">
         @if (User.IsInRole(RoleNames.Admin))
         {
-            <a class="nav-link" asp-controller="AdminDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
+            <a class="nav-link btn btn-outline-primary me-2" asp-controller="AdminDashboard" asp-action="Index" title="Dashboard">Admin Dashboard</a>
         }
         else if (User.IsInRole(RoleNames.Business))
         {
-            <a class="nav-link" asp-controller="BusinessDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
+            <a class="nav-link btn btn-outline-primary me-2" asp-controller="BusinessDashboard" asp-action="Index" title="Dashboard">Business Dashboard</a>
         }
         else
         {
-            <a class="nav-link" asp-controller="CustomerDashboard" asp-action="Index" title="Dashboard">Hello @user?.DisplayName!</a>
+            <a class="nav-link btn btn-outline-primary me-2" asp-controller="CustomerDashboard" asp-action="Index" title="Dashboard">My Dashboard</a>
         }
     </li>
     @await Component.InvokeAsync("NotificationBell")
