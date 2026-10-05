@@ -9,38 +9,44 @@ class Program
         using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
-            SqlCommand cmd = new SqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'", conn);
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            Console.WriteLine("Fixing WishlistItems schema...");
+            string fixSql = @"
+IF OBJECT_ID('WishlistItems', 'U') IS NOT NULL 
+BEGIN 
+    ALTER TABLE WishlistItems DROP CONSTRAINT IF EXISTS FK_WishlistItems_Equipment_EquipmentId;
+    ALTER TABLE WishlistItems DROP CONSTRAINT IF EXISTS FK_WishlistItems_Equipment_EquipmentId1;
+    ALTER TABLE WishlistItems DROP CONSTRAINT IF EXISTS FK_WishlistItems_Wishlists_WishlistId;
+    DROP TABLE WishlistItems; 
+END
+IF OBJECT_ID('Wishlists', 'U') IS NOT NULL
+BEGIN
+    ALTER TABLE Wishlists DROP CONSTRAINT IF EXISTS FK_Wishlists_AspNetUsers_CustomerId;
+    DROP TABLE Wishlists;
+END
+
+CREATE TABLE WishlistItems (
+    Id int NOT NULL IDENTITY,
+    CustomerId nvarchar(450) NOT NULL,
+    EquipmentId int NOT NULL,
+    CreatedAt datetime2 NOT NULL,
+    CONSTRAINT PK_WishlistItems PRIMARY KEY (Id),
+    CONSTRAINT FK_WishlistItems_AspNetUsers_CustomerId FOREIGN KEY (CustomerId) REFERENCES AspNetUsers (Id) ON DELETE CASCADE,
+    CONSTRAINT FK_WishlistItems_Equipment_EquipmentId FOREIGN KEY (EquipmentId) REFERENCES Equipment (Id) ON DELETE CASCADE
+);
+CREATE INDEX IX_WishlistItems_EquipmentId ON WishlistItems (EquipmentId);
+CREATE UNIQUE INDEX IX_WishlistItems_CustomerId_EquipmentId ON WishlistItems (CustomerId, EquipmentId);
+";
+            using (SqlCommand fixCmd = new SqlCommand(fixSql, conn))
             {
-                while (reader.Read())
-                {
-                    string tableName = reader.GetString(0);
-                    Console.WriteLine("Table: " + tableName);
-                }
+                fixCmd.ExecuteNonQuery();
             }
+            Console.WriteLine("Schema fixed successfully.");
 
-            Console.WriteLine("\nCounts:");
-            string[] tables = { "AspNetUsers", "Businesses", "Equipment", "Notifications", "Reviews" };
-            foreach(var t in tables)
-            {
-                try {
-                    SqlCommand countCmd = new SqlCommand($"SELECT COUNT(*) FROM [{t}]", conn);
-                    int count = (int)countCmd.ExecuteScalar();
-                    Console.WriteLine($"{t}: {count} rows");
-                }
-                catch(Exception ex) {
-                    Console.WriteLine($"{t}: Error - {ex.Message}");
-                }
-            }
+            Console.WriteLine("\nReviews Columns:");
+            PrintCols("Reviews", conn);
 
-            Console.WriteLine("\nNotifications Columns:");
-            PrintCols("Notifications", conn);
-            
-            Console.WriteLine("\nBusinesses Columns:");
-            PrintCols("Businesses", conn);
-
-            Console.WriteLine("\nEquipment Columns:");
-            PrintCols("Equipment", conn);
+            Console.WriteLine("\nWishlistItems Columns:");
+            PrintCols("WishlistItems", conn);
         }
     }
 
